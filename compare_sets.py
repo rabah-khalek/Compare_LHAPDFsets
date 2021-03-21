@@ -13,14 +13,6 @@ import matplotlib.gridspec as gridspec
 warnings.filterwarnings("ignore")
 import src.sets as SETS
 
-#! flavours available
-#
-# r'$\gamma$': 0, r'$\Sigma$': 1, r'$g$': 2, r'$V$': 3, r'$V_3$': 4, r'$V_8$': 5, r'$V_{15}$': 6,
-# r'$V_{24}$': 7, r'$V_{35}$': 8, r'$T_{3}$': 9, r'$T_{3}$': 10, r'$T_{15}$': 11, r'$T_{24}$': 12, r'$T_{35}$': 13}
-# r'$\bar{t}$': 0, r'$\bar{b}$': 1, r'$\bar{c}$': 2, r'$\bar{s}$': 3, r'$\bar{u}$': 4, r'$\bar{d}$': 5,
-# r'$g$': 6, r'$d$': 7, r'$u$': 8, r'$s$': 9, r'$c$': 10, r'$b$': 11, r'$t$': 12, r'$\gamma$': 13}
-# r'$F_2^{LO}$' r'$u^+$' r'$d^+$' r'$s^+$' r'$c^+$' r'$b^+$' r'$t^+$' r'$u^-$' r'$d^-$' r'$s^-$' r'$c^-$' r'$b^-$' r'$t^-$'
-
 Ratio_den_Set = 0  # 0 for the first PDF to be chosen as denominator in the ratio
 
 #---- plotting settings

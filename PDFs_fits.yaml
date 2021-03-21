@@ -1,11 +1,18 @@
 #See https://arxiv.org/Set/1412.7420.pdf for error type definitions
 # "symmhessian", "hessian" or "MC"
 
+#! flavours available
+# $\gamma$': 0, $\Sigma$': 1, $g$': 2, $V$': 3, $V_3$': 4, $V_8$': 5, $V_{15}$': 6,
+# $V_{24}$': 7, $V_{35}$': 8, $T_{3}$': 9, $T_{3}$': 10, $T_{15}$': 11, $T_{24}$': 12, $T_{35}$': 13}
+# $\bar{t}$': 0, $\bar{b}$': 1, $\bar{c}$': 2, $\bar{s}$': 3, $\bar{u}$': 4, $\bar{d}$': 5,
+# $g$': 6, $d$': 7, $u$': 8, $s$': 9, $c$': 10, $b$': 11, $t$': 12, $\gamma$': 13}
+# $F_2^{LO}$' $u^+$' $d^+$' $s^+$' $c^+$' $b^+$' $t^+$' $u^-$' $d^-$' $s^-$' $c^-$' $b^-$' $t^-$'
+
 test: 
   Setsnames:  [[NNPDF31_nlo_as_0118,  NNPDF31_nnlo_as_0118]]
   Setlabels:  ['$\rm NNPDF3.1\,(NLO)$', '$\rm NNPDF3.1\,(NNLO)$']
   Error_type: [MC, MC]
   Nreps:      [100, 100]
-  flavors_to_plot: ['$\bar{u}$', '$d$', '$s^+$', '$g$']
+  flavors_to_plot: ['$\Sigma$', '$s^+$', '$g$']
   Q: 10
   x: [0.00001, 0.6, 100]
