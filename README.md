@@ -27,11 +27,11 @@ See https://arxiv.org/Set/1412.7420.pdf for their definitions:
 ## Output
 
 ### Horizontal format
-![Horizontal Absolutes](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/master/PDFs_figs/horizontal/test_AbsolutesPDFs_Q10.png?raw=true)
-![Horizontal Ratio](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/master/PDFs_figs/horizontal/test_RatioPDFs_Q10.png?raw=true)
-![Horizontal Relative](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/master/PDFs_figs/horizontal/test_RelativePDFs_Q10.png?raw=true)
+![Horizontal Absolutes](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/main/PDFs_figs/horizontal/test_AbsolutesPDFs_Q10.png)
+![Horizontal Ratio](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/main/PDFs_figs/horizontal/test_RatioPDFs_Q10.png?raw=true)
+![Horizontal Relative](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/main/PDFs_figs/horizontal/test_RelativePDFs_Q10.png?raw=true)
 
 ### Vertical format
-![Vertical Absolutes](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/master/PDFs_figs/vertical/test_AbsolutesPDFs_Q10.png?raw=true)
-![Vertical Ratio](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/master/PDFs_figs/vertical/test_RatioPDFs_Q10.png?raw=true)
-![Vertical Relative](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/master/PDFs_figs/vertical/test_RelativePDFs_Q10.png?raw=true)
+![Vertical Absolutes](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/main/PDFs_figs/vertical/test_AbsolutesPDFs_Q10.png?raw=true)
+![Vertical Ratio](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/main/PDFs_figs/vertical/test_RatioPDFs_Q10.png?raw=true)
+![Vertical Relative](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/main/PDFs_figs/vertical/test_RelativePDFs_Q10.png?raw=true)
