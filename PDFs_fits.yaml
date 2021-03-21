@@ -1,0 +1,11 @@
+#See https://arxiv.org/Set/1412.7420.pdf for error type definitions
+# "symmhessian", "hessian" or "MC"
+
+test: 
+  Setsnames:  [[NNPDF31_nlo_as_0118,  NNPDF31_nnlo_as_0118]]
+  Setlabels:  ['$\rm NNPDF3.1\,(NLO)$', '$\rm NNPDF3.1\,(NNLO)$']
+  Error_type: [MC, MC]
+  Nreps:      [100, 100]
+  flavors_to_plot: ['$\bar{u}$', '$d$', '$s^+$', '$g$']
+  Q: 10
+  x: [0.00001, 0.6, 100]
