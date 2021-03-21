@@ -24,7 +24,8 @@ See https://arxiv.org/Set/1412.7420.pdf for their definitions:
 - `plots_format = ["vertical", "horizontal"]`
 - Implement `comparison_choices` in PDFs_fits.yaml
 
-## Output
+## Output example
+Works for any LHAPDF-format.
 
 ### Horizontal format
 ![Horizontal Absolutes](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/main/PDFs_figs/horizontal/test_AbsolutesPDFs_Q10.png)
