@@ -1,3 +1,5 @@
+#-- Author: Rabah Abdul Khalek <rabah.khalek@gmail.com>
+
 import collections
 import yaml
 import lhapdf
@@ -142,8 +144,10 @@ def GetStats(SETs, Error_type):
 
     flavors = list(SETs.keys()) #shallow copy
 
-    SETs["low"] = {}
-    SETs["up"] = {}
+    SETs["low90"] = {}
+    SETs["up90"] = {}
+    SETs["low68"] = {}
+    SETs["up68"] = {}
     SETs["median"] = {}
     SETs["std"] = {}
     SETs["mean"] = {}
@@ -153,8 +157,10 @@ def GetStats(SETs, Error_type):
         Nx = SETs[fl].shape[1]
 
         if Error_type == "MC":
-            SETs["low"][fl] = np.nanpercentile(SETs[fl][1:Nmem, :], 5., axis=0)
-            SETs["up"][fl] = np.nanpercentile(SETs[fl][1:Nmem, :], 95., axis=0)
+            SETs["low90"][fl] = np.nanpercentile(SETs[fl][1:Nmem, :], 5., axis=0)
+            SETs["up90"][fl] = np.nanpercentile(SETs[fl][1:Nmem, :], 95., axis=0)
+            SETs["low68"][fl] = np.nanpercentile(SETs[fl][1:Nmem, :], 16., axis=0)
+            SETs["up68"][fl] = np.nanpercentile(SETs[fl][1:Nmem, :], 84., axis=0)
             SETs["median"][fl] = np.median(SETs[fl][1:Nmem,:], axis=0)
             SETs["mean"][fl] = SETs[fl][0, :]
             SETs["std"][fl] = np.std(SETs[fl][1:Nmem,:], axis=0)

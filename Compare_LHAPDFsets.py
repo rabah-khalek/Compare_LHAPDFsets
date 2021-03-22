@@ -1,6 +1,4 @@
 #-- Author: Rabah Abdul Khalek <rabah.khalek@gmail.com>
-
-import os
 import sys
 import numpy as np
 import yaml
@@ -26,16 +24,15 @@ rc('ytick', labelsize=fontsize)
 py.rcParams['legend.title_fontsize'] = 'xx-large'
 
 #---- to modify
-Type_of_sets = "PDFs"
-comparison_choices = ["test"]
-# "Absolutes", "Relative Uncertainty", "Ratio"
-comparison_types = ["Absolutes", "Relative Uncertainty", "Ratio"]
-plots_format = ["vertical", "horizontal"]  # "vertical","horizontal"
 
+comparison_choices = ["DatasetsVariation", "check"]
+# "Absolutes", "Relative Uncertainty", "Ratio"
 
 Fits_catalog = None
-with open(Type_of_sets+"_fits.yaml") as f:
+with open(sys.argv[1]) as f:
     Fits_catalog = yaml.safe_load(f)
+
+Type_of_sets = Fits_catalog["Type_of_sets"]
 
 if comparison_choices[0]=="all":
     comparison_choices = Fits_catalog.keys()
@@ -48,6 +45,8 @@ for comparison_choice in comparison_choices:
     Error_type = Fits_catalog[comparison_choice]["Error_type"] 
     Nreps = Fits_catalog[comparison_choice]["Nreps"]
     flavors_to_plot = Fits_catalog[comparison_choice]["flavors_to_plot"]
+    comparison_types = Fits_catalog[comparison_choice]["comparison_types"]
+    plots_format = Fits_catalog[comparison_choice]["plots_format"]
 
     Q = Fits_catalog[comparison_choice]["Q"]
     Q2 = Q**2  
@@ -140,7 +139,8 @@ for comparison_choice in comparison_choices:
                                             '{: .1f}'.format(Q)+r'\, \, {\rm GeV}$) \\}', fontsize=fontsize)
                             axs[ifl].set_xticklabels([])
                         elif ifl == len(flavors_to_plot)-1:
-                            axs[ifl].set_xlabel(r'{\rm \boldmath $x$}', fontsize=fontsize)
+                            axs[ifl].set_xlabel(
+                                r'{\rm \boldmath '+Fits_catalog["xaxis_label"]+r'}', fontsize=fontsize)
                             axs[ifl].xaxis.set_label_coords(0.95, 0.075)
                         else:
                             axs[ifl].set_xticklabels([])
@@ -222,8 +222,8 @@ for comparison_choice in comparison_choices:
                         #if ifl != 0:
                         #    axs[ifl].set_yticklabels([])
 
-
-                        axs[ifl].set_xlabel(r'{\rm \boldmath $x$}', fontsize=fontsize)
+                        axs[ifl].set_xlabel(
+                            r'{\rm \boldmath '+Fits_catalog["xaxis_label"]+r'}', fontsize=fontsize)
                         axs[ifl].xaxis.set_label_coords(0.95, 0.075)
                             
             fig.suptitle(r'{\rm \textbf{'+Type_of_sets+' '+comparison_type+r'} ($Q=' +
