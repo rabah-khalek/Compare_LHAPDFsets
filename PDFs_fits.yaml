@@ -14,18 +14,33 @@
 
 
 test: 
-  Setsnames:  [[NNPDF31_nlo_as_0118,  NNPDF31_nnlo_as_0118]]
+  Setsnames:  [NNPDF31_nlo_as_0118,  NNPDF31_nnlo_as_0118]
   Setlabels:  ['$\rm NNPDF3.1\,(NLO)$', '$\rm NNPDF3.1\,(NNLO)$']
   Error_type: [MC, MC]
   Nreps:      [100, 100]
   flavors_to_plot: ['$\Sigma$', '$s^+$', '$g$']
-  Q: 10
-  x: [0.00001, 0.6, 100]
-  comparison_types: ["Absolutes", "Relative Uncertainty", "Ratio"]
-  plots_format: ["vertical", "horizontal"] 
+  Q: 5
+  x: [0.0001, 0.5, 100]
+  plots_format: [vertical] 
   Type_of_sets: PDFs
   xaxis_label: '$x$'
-  xticklabels: True
-  yticklabels: True
-  legend: True
-  title: True
+  Comparisons: 
+
+    Ratio: #!
+      xlabel: inside # inside, outside, none
+      ylabel: inside
+      legend: True
+      title: True
+      xticklabels: True
+      yticklabels: True
+
+    Relative Uncertainty: #!
+      xlabel: outside # inside, outside, none
+      ylabel: outside
+      legend: True
+      title: True
+      xticklabels: True
+      yticklabels: True
+      xaxis:
+        xticks: [0.0001]
+        xtickslabels: ['$\rm 10^{-4}$']
