@@ -28,8 +28,10 @@ py.rcParams['legend.title_fontsize'] = 'xx-large'
 comparison_choices = ["all"]
 # "Absolutes", "Relative Uncertainty", "Ratio"
 
+InputCard = sys.argv[1]
+outputname = InputCard.split(".yaml")[0]
 Fits_catalog = None
-with open(sys.argv[1]) as f:
+with open(InputCard) as f:
     Fits_catalog = yaml.safe_load(f)
 
 if comparison_choices[0]=="all":
@@ -47,13 +49,18 @@ for comparison_choice in comparison_choices:
     plots_format = Fits_catalog[comparison_choice]["plots_format"]
     Type_of_sets = Fits_catalog[comparison_choice]["Type_of_sets"]
     xaxis_label = Fits_catalog[comparison_choice]["xaxis_label"]
+    #booleans
+    xticklabels = Fits_catalog[comparison_choice]["xticklabels"]
+    yticklabels = Fits_catalog[comparison_choice]["yticklabels"]
+    legend = Fits_catalog[comparison_choice]["legend"]
+    title = Fits_catalog[comparison_choice]["title"]
 
-    if not os.path.isdir(Type_of_sets + '_figs'):
-        os.system('mkdir '+Type_of_sets + '_figs')
-    if not os.path.isdir(Type_of_sets + '_figs/vertical'):
-        os.system('mkdir '+Type_of_sets + '_figs/vertical')
-    if not os.path.isdir(Type_of_sets + '_figs/horizontal'):
-        os.system('mkdir '+Type_of_sets + '_figs/horizontal')
+    if not os.path.isdir(outputname):
+        os.system('mkdir '+outputname)
+    if not os.path.isdir(outputname + '/vertical'):
+        os.system('mkdir '+outputname + '/vertical')
+    if not os.path.isdir(outputname + '/horizontal'):
+        os.system('mkdir '+outputname + '/horizontal')
         
     
     Q = Fits_catalog[comparison_choice]["Q"]
@@ -113,16 +120,12 @@ for comparison_choice in comparison_choices:
                             axs.append(ax)
 
                         ##
-                        if iSets!=0:
-                            axs[ifl].set_yticklabels([])
-
-                        ##
                         if ifl == 0 and iSets == 0:
                             axs[ifl].plot(X, Y, color=colors[iSet], ls='-', lw=1.5, label=Setlabels[iSet])
                             if comparison_type != "Relative Uncertainty":
                                 if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
                                     axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[iSet], edgecolor=colors[iSet], alpha=0.25, lw=0.1)
-                            axs[ifl].legend(loc='best', fontsize=legend_fontsize, ncol=label_ncol, frameon=False)
+                            if legend: axs[ifl].legend(loc='best', fontsize=legend_fontsize, ncol=label_ncol, frameon=False)
                         else:
                             axs[ifl].plot(X, Y, color=colors[iSet], ls='-', lw=1.5)
                             if comparison_type != "Relative Uncertainty":
@@ -143,7 +146,7 @@ for comparison_choice in comparison_choices:
                         
                         ##
                         if ifl == 0:
-                            axs[ifl].set_title(r'{\rm \textbf{'+Type_of_sets+' '+comparison_type+r'} ($Q=' +
+                            if title: axs[ifl].set_title(r'{\rm \textbf{'+Type_of_sets+' '+comparison_type+r'} ($Q=' +
                                             '{: .1f}'.format(Q)+r'\, \, {\rm GeV}$) \\}', fontsize=fontsize)
                             axs[ifl].set_xticklabels([])
                         elif ifl == len(flavors_to_plot)-1:
@@ -153,9 +156,17 @@ for comparison_choice in comparison_choices:
                         else:
                             axs[ifl].set_xticklabels([])
 
+                        ##
+                        if iSets != 0:
+                            axs[ifl].set_yticklabels([])
+                        if not xticklabels:
+                            axs[ifl].set_xticklabels([])
+                        if not yticklabels:
+                            axs[ifl].set_yticklabels([])
+
 
             py.tight_layout()
-            py.savefig(Type_of_sets+'_figs/vertical/'+comparison_choice+'_'+comparison_type.split(" ")[0]+
+            py.savefig(outputname+'/vertical/'+comparison_choice+'_'+comparison_type.split(" ")[0] +
                     Type_of_sets+'_Q'+str(int(Q))+'.pdf')
 
             py.clf()
@@ -167,7 +178,7 @@ for comparison_choice in comparison_choices:
 
             fig = py.figure(figsize=(8*len(flavors_to_plot), 6))
             gs = gridspec.GridSpec(len(Setsnames), int(len(flavors_to_plot)))
-            #gs.update(wspace=0.025, hspace=0.05) # set the spacing between axes. 
+            gs.update(wspace=0.1) # set the spacing between axes. 
 
             print("Plotting horizontal "+comparison_type+"")
 
@@ -201,16 +212,12 @@ for comparison_choice in comparison_choices:
                             axs.append(ax)
 
                         ##
-                        if iSets!=0:
-                            axs[ifl].set_yticklabels([])
-
-                        ##
                         if ifl == 0 and iSets == 0:
                             axs[ifl].plot(X, Y, color=colors[iSet], ls='-', lw=1.5, label=Setlabels[iSet])
                             if comparison_type != "Relative Uncertainty":
                                 if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
                                     axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[iSet], edgecolor=colors[iSet], alpha=0.25, lw=0.1)
-                            axs[ifl].legend(loc='best', fontsize=legend_fontsize, ncol=label_ncol, frameon=False)
+                            if legend: axs[ifl].legend(loc='best', fontsize=legend_fontsize, ncol=label_ncol, frameon=False)
                         else:
                             axs[ifl].plot(X, Y, color=colors[iSet], ls='-', lw=1.5)
                             if comparison_type != "Relative Uncertainty":
@@ -233,11 +240,18 @@ for comparison_choice in comparison_choices:
                         axs[ifl].set_xlabel(
                             r'{\rm \boldmath '+xaxis_label+r'}', fontsize=fontsize)
                         axs[ifl].xaxis.set_label_coords(0.95, 0.075)
+
+                        ##
+                        if iSets != 0:
+                            axs[ifl].set_yticklabels([])
+                        if not xticklabels:
+                            axs[ifl].set_xticklabels([])
+                        if not yticklabels:
+                            axs[ifl].set_yticklabels([])
                             
-            fig.suptitle(r'{\rm \textbf{'+Type_of_sets+' '+comparison_type+r'} ($Q=' +
-                        '{: .1f}'.format(Q)+r'\, \, {\rm GeV}$)}', y=0.96, fontsize=fontsize)
+            if title: fig.suptitle(r'{\rm \textbf{'+Type_of_sets+' '+comparison_type+r'} ($Q=' + '{: .1f}'.format(Q)+r'\, \, {\rm GeV}$)}', y=0.96, fontsize=fontsize)
             py.tight_layout()
-            py.savefig(Type_of_sets+'_figs/horizontal/'+comparison_choice+'_'+comparison_type.split(" ")[0]+
+            py.savefig(outputname+'/horizontal/'+comparison_choice+'_'+comparison_type.split(" ")[0] +
                     Type_of_sets+'_Q'+str(int(Q))+'.pdf')
 
             py.clf()
