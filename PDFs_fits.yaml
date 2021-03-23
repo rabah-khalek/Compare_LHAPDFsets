@@ -4,9 +4,9 @@
 #- MC
 #
 #------Flavours available
-#- Evolution basis: '$\gamma$' '$\Sigma$' '$g$' '$V$' '$V_3$' '$V_8$' '$V_{15}$' '$V_{24}$' '$V_{35}$' '$T_{3}$' '$T_{3}$' '$T_{15}$' '$T_{24}$' '$T_#{35}$'
-#- Physical basis: '$\bar{t}$' '$\bar{b}$' '$\bar{c}$' '$\bar{s}$' '$\bar{u}$' '$\bar{d}$' '$g$' '$d$' '$u$' '$s$' '$c$' '$b$' '$t$' '$\gamma$'
-#- Combinations: '$F_2^{LO}$' '$u^+$' '$d^+$' '$s^+$' '$c^+$' '$b^+$' '$t^+$' '$u^-$' '$d^-$' '$s^-$' '$c^-$' '$b^-$' '$t^-$'
+#- Evolution basis: '\gamma' '\Sigma' 'g' 'V' 'V_3' 'V_8' 'V_{15}' 'V_{24}' 'V_{35}' 'T_{3}' 'T_{3}' 'T_{15}' 'T_{24}' 'T_#{35}'
+#- Physical basis: '\bar{t}' '\bar{b}' '\bar{c}' '\bar{s}' '\bar{u}' '\bar{d}' 'g' 'd' 'u' 's' 'c' 'b' 't' '\gamma'
+#- Combinations: 'F_2^{LO}' 'u^+' 'd^+' 's^+' 'c^+' 'b^+' 't^+' 'u^-' 'd^-' 's^-' 'c^-' 'b^-' 't^-'
 #-------Comparison types
 #"Absolutes", "Relative Uncertainty", "Ratio"
 #-------plots format
@@ -15,15 +15,15 @@
 
 test: 
   Setsnames:  [NNPDF31_nlo_as_0118,  NNPDF31_nnlo_as_0118]
-  Setlabels:  ['$\rm NNPDF3.1\,(NLO)$', '$\rm NNPDF3.1\,(NNLO)$']
+  Setlabels:  ['\rm NNPDF3.1\,(NLO)', '\rm NNPDF3.1\,(NNLO)']
   Error_type: [MC, MC]
   Nreps:      [100, 100]
-  flavors_to_plot: ['$\Sigma$', '$s^+$', '$g$']
+  flavors_to_plot: ['\Sigma', 's^+', 'g']
   Q: 5
   x: [0.0001, 0.5, 100]
   plots_format: [vertical] 
   Type_of_sets: PDFs
-  xaxis_label: '$x$'
+  xaxis_label: 'x'
   Comparisons: 
 
     Ratio: #!

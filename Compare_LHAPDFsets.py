@@ -49,6 +49,9 @@ for comparison_choice in comparison_choices:
     plots_format = Fits_catalog[comparison_choice]["plots_format"]
     Type_of_sets = Fits_catalog[comparison_choice]["Type_of_sets"]
     xaxis_label = Fits_catalog[comparison_choice]["xaxis_label"]
+    hadron= " "
+    if "hadron" in Fits_catalog[comparison_choice].keys():
+        hadron = Fits_catalog[comparison_choice]["hadron"]
 
     if not os.path.isdir(outputname):
         os.system('mkdir '+outputname)
@@ -69,8 +72,9 @@ for comparison_choice in comparison_choices:
     LHAPDFSets = {}
     for iSet, Setname in enumerate(Setsnames):
         print("Loading "+Setname+"")
-        Sets = SETS.Get(Setname, X, Q, Nreps[iSet]+1)
-        LHAPDFSets[Setname] = SETS.GetStats(Sets, Error_type[iSet])
+        if not Setname in LHAPDFSets.keys():
+            Sets = SETS.Get(Setname, X, Q, Nreps[iSet]+1)
+            LHAPDFSets[Setname] = SETS.GetStats(Sets, Error_type[iSet])
 
     print("Computing stats of sets is done")
 
@@ -102,6 +106,7 @@ for comparison_choice in comparison_choices:
                 py.figure(figsize=(8, 6*len(flavors_to_plot)))
                 gs = gridspec.GridSpec(int(len(flavors_to_plot)),1)
                 gs.update(wspace=0.025, hspace=0.05) # set the spacing between axes. 
+                py.gcf().subplots_adjust(left=0.15, right=0.95, top=0.99)
                 print("Plotting vertical "+Comparison+"")
             elif plot_format=="horizontal":
                 fig = py.figure(figsize=(8*len(flavors_to_plot), 6))
@@ -109,7 +114,10 @@ for comparison_choice in comparison_choices:
                 if ylabel == 'inside' or ylabel == 'none':
                     gs.update(wspace=0.1)  # set the spacing between axes.
                 elif ylabel == 'outside':
-                    gs.update(wspace=0.2)  # set the spacing between axes.
+                    gs.update(wspace=0.25)  # set the spacing between axes.
+                py.subplots_adjust(left=0.1, right=0.99, top=0.99)
+                if not xticklabels:
+                    py.subplots_adjust(bottom=0.005)
 
                 print("Plotting horizontal "+Comparison+"")
 
@@ -124,16 +132,19 @@ for comparison_choice in comparison_choices:
                         Y = LHAPDFSets[Setname]["mean"][fl]
                         Y_minus = LOW
                         Y_plus = UP
+                        Comparison_title = Type_of_sets
 
                     elif Comparison == "Relative Uncertainty":
                         Y = (UP-LOW)/LHAPDFSets[Setname]["mean"][fl]
                         Y_minus = None
                         Y_plus = None
+                        Comparison_title = Comparison
 
                     elif Comparison == "Ratio":
                         Y = LHAPDFSets[Setname]["mean"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
                         Y_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
                         Y_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
+                        Comparison_title = Comparison
 
                     ##
                     if iSet == 0:
@@ -141,42 +152,52 @@ for comparison_choice in comparison_choices:
                         axs.append(ax)
 
                     ##
-                    if ifl == 0:
+                    if ifl == 0 and legend:
                         axs[ifl].plot(X, Y, color=colors[iSet], ls='-', lw=1.5, label=Setlabels[iSet])
+
                         if Comparison != "Relative Uncertainty":
                             if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
                                 axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[iSet], edgecolor=colors[iSet], alpha=0.25, lw=0.1)
-                        if legend: axs[ifl].legend(loc='best', fontsize=legend_fontsize, ncol=label_ncol, frameon=False)
+
+                        axs[ifl].legend(loc='best', title=r'{\rm \textbf{'+Comparison_title+r'} ($Q=' + '{: .1f}'.format(Q)+r'\, \, {\rm GeV}$) \\}',fontsize=legend_fontsize, ncol=label_ncol, frameon=False)
                     else:
                         axs[ifl].plot(X, Y, color=colors[iSet], ls='-', lw=1.5)
                         if Comparison != "Relative Uncertainty":
                             if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
                                 axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[iSet], edgecolor=colors[iSet], alpha=0.25, lw=0.1)
-                        
+                        if ifl == 0 and title:
+                            axs[ifl].legend(loc='best', title=r'{\rm \textbf{'+Comparison_title+r'} ($Q=' + '{: .1f}'.format(Q)+r'\, \, {\rm GeV}$) \\}',fontsize=legend_fontsize, ncol=label_ncol, frameon=False)
                     ##
                     axs[ifl].set_xscale('log')
                     axs[ifl].set_xlim(xmin, xmax)
                     axs[ifl].tick_params(direction='in', which='both')
                     axs[ifl].tick_params(which='major', length=5)
                     axs[ifl].tick_params(which='minor', length=2)
+
+                    if Type_of_sets == "FFs":
+                        dist = "$zD^{"+hadron+"}_{"+fl+"}$"
+                    elif Type_of_sets == "PDFs":
+                        dist = "$xf^{p}_{"+fl+"}$"
+                    elif Type_of_sets == "nPDFs":
+                        dist = "$xf^{A}_{"+fl+"}$"
                     
                     ##
                     if ylabel != 'none':
-                        axs[ifl].set_ylabel(r'{\rm \boldmath'+fl+'}', fontsize=fontsize, rotation=0)
+                        axs[ifl].set_ylabel(r'{\rm \boldmath'+dist+'}', fontsize=fontsize, rotation=0)
                     if ylabel == 'inside':
                         axs[ifl].yaxis.set_label_coords(0.05, 0.925)
                     elif ylabel == 'outside':
-                        axs[ifl].yaxis.set_label_coords(-0.1, 0.5)
+                        axs[ifl].yaxis.set_label_coords(-0.125, 0.5)
                     
                     ##
                     if plot_format=="vertical":
                         if ifl == 0:
-                            if title: axs[ifl].set_title(r'{\rm \textbf{'+Type_of_sets+' '+Comparison+r'} ($Q=' +
-                                            '{: .1f}'.format(Q)+r'\, \, {\rm GeV}$) \\}', fontsize=fontsize)
+                            #if title: axs[ifl].set_title(r'{\rm \textbf{$'+hadron+'$ '+Type_of_sets+' '+Comparison_title+r'} ($Q=' +
+                            #                '{: .1f}'.format(Q)+r'\, \, {\rm GeV}$) \\}', fontsize=fontsize)
                             axs[ifl].set_xticklabels([])
                         elif ifl == len(flavors_to_plot)-1:
                             axs[ifl].set_xlabel(
-                                r'{\rm \boldmath '+xaxis_label+r'}', fontsize=fontsize)
+                                r'{\rm \boldmath $'+xaxis_label+r'$}', fontsize=fontsize)
                             if xlabel == 'inside':
                                 axs[ifl].xaxis.set_label_coords(0.95, 0.075)
 
@@ -190,9 +211,11 @@ for comparison_choice in comparison_choices:
                                 axs[ifl].set_yticklabels(ytickslabels)
 
                     elif plot_format=="horizontal":
-                        if title: fig.suptitle(r'{\rm \textbf{'+Type_of_sets+' '+Comparison+r'} ($Q=' + '{: .1f}'.format(Q)+r'\, \, {\rm GeV}$)}', y=0.96, fontsize=fontsize)
+                        #if title:
+                        #    fig.suptitle(r'{\rm \textbf{$'+hadron+'$ '+Type_of_sets+' '+Comparison_title+r'} ($Q=' +
+                        #                 '{: .1f}'.format(Q)+r'\, \, {\rm GeV}$)}', y=0.96, fontsize=fontsize)
                         if xlabel != "none":
-                            axs[ifl].set_xlabel(r'{\rm \boldmath '+xaxis_label+r'}', fontsize=fontsize)
+                            axs[ifl].set_xlabel(r'{\rm \boldmath $'+xaxis_label+r'$}', fontsize=fontsize)
                         if xlabel == 'inside':
                             axs[ifl].xaxis.set_label_coords(0.95, 0.075)
 
