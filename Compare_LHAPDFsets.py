@@ -105,7 +105,7 @@ for comparison_choice in comparison_choices:
             if plot_format=="vertical":
                 py.figure(figsize=(8, 6*len(flavors_to_plot)))
                 gs = gridspec.GridSpec(int(len(flavors_to_plot)),1)
-                gs.update(wspace=0.025, hspace=0.05) # set the spacing between axes. 
+                gs.update(wspace=0.025, hspace=0.02) # set the spacing between axes. 
                 py.gcf().subplots_adjust(left=0.15, right=0.95, top=0.99)
                 print("Plotting vertical "+Comparison+"")
             elif plot_format=="horizontal":
@@ -133,18 +133,21 @@ for comparison_choice in comparison_choices:
                         Y_minus = LOW
                         Y_plus = UP
                         Comparison_title = Type_of_sets
+                        ls="-"
 
                     elif Comparison == "Relative Uncertainty":
                         Y = (UP-LOW)/LHAPDFSets[Setname]["mean"][fl]
                         Y_minus = None
                         Y_plus = None
                         Comparison_title = Comparison
+                        ls="-"
 
                     elif Comparison == "Ratio":
                         Y = LHAPDFSets[Setname]["mean"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
                         Y_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
                         Y_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
                         Comparison_title = Comparison
+                        ls="--"
 
                     ##
                     if iSet == 0:
@@ -153,7 +156,7 @@ for comparison_choice in comparison_choices:
 
                     ##
                     if ifl == 0 and legend:
-                        axs[ifl].plot(X, Y, color=colors[iSet], ls='-', lw=1.5, label=Setlabels[iSet])
+                        axs[ifl].plot(X, Y, color=colors[iSet], ls=ls, lw=1.5, label=Setlabels[iSet])
 
                         if Comparison != "Relative Uncertainty":
                             if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
@@ -161,7 +164,7 @@ for comparison_choice in comparison_choices:
 
                         axs[ifl].legend(loc='best', title=r'{\rm \textbf{'+Comparison_title+r'} ($Q=' + '{: .1f}'.format(Q)+r'\, \, {\rm GeV}$) \\}',fontsize=legend_fontsize, ncol=label_ncol, frameon=False)
                     else:
-                        axs[ifl].plot(X, Y, color=colors[iSet], ls='-', lw=1.5)
+                        axs[ifl].plot(X, Y, color=colors[iSet], ls=ls, lw=1.5)
                         if Comparison != "Relative Uncertainty":
                             if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
                                 axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[iSet], edgecolor=colors[iSet], alpha=0.25, lw=0.1)
