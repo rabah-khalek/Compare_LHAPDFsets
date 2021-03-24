@@ -16,7 +16,6 @@ Ratio_den_Set = 0  # 0 for the first PDF to be chosen as denominator in the rati
 #---- plotting settings
 label_ncol = 1
 ratio_label_ncol = 1
-colors = py.rcParams['axes.prop_cycle'].by_key()['color']
 fontsize = 20
 legend_fontsize = 15
 rc('xtick', labelsize=fontsize)
@@ -27,6 +26,7 @@ py.rcParams['legend.title_fontsize'] = 'xx-large'
 
 comparison_choices = ["all"]
 # "Absolutes", "Relative Uncertainty", "Ratio"
+colors={}
 
 InputCard = sys.argv[1]
 outputname = InputCard.split(".yaml")[0]
@@ -35,8 +35,9 @@ with open(InputCard) as f:
     Fits_catalog = yaml.safe_load(f)
 
 if comparison_choices[0]=="all":
-    comparison_choices = Fits_catalog.keys()
+    comparison_choices = list(Fits_catalog.keys())
 
+comparison_choices.remove("Global Settings")
 for comparison_choice in comparison_choices:
     print("\n---"+comparison_choice+"---")
 
@@ -52,6 +53,11 @@ for comparison_choice in comparison_choices:
     hadron= " "
     if "hadron" in Fits_catalog[comparison_choice].keys():
         hadron = Fits_catalog[comparison_choice]["hadron"]
+
+    if Fits_catalog['Global Settings'][Type_of_sets]["colors"] == "default":
+        colors[Type_of_sets] = py.rcParams['axes.prop_cycle'].by_key()['color']
+    else:
+        colors[Type_of_sets] = Fits_catalog['Global Settings'][Type_of_sets]["colors"]
 
     if not os.path.isdir(outputname):
         os.system('mkdir '+outputname)
@@ -149,6 +155,13 @@ for comparison_choice in comparison_choices:
                         Comparison_title = Comparison
                         ls="--"
 
+                    if Type_of_sets == "FFs":
+                        dist = "$zD^{"+hadron+"}_{"+fl+"}$"
+                    elif Type_of_sets == "PDFs":
+                        dist = "$xf^{p}_{"+fl+"}$"
+                    elif Type_of_sets == "nPDFs":
+                        dist = "$xf^{A}_{"+fl+"}$"
+
                     ##
                     if iSet == 0:
                         ax = py.subplot(gs[ifl])
@@ -176,13 +189,6 @@ for comparison_choice in comparison_choices:
                     axs[ifl].tick_params(direction='in', which='both')
                     axs[ifl].tick_params(which='major', length=5)
                     axs[ifl].tick_params(which='minor', length=2)
-
-                    if Type_of_sets == "FFs":
-                        dist = "$zD^{"+hadron+"}_{"+fl+"}$"
-                    elif Type_of_sets == "PDFs":
-                        dist = "$xf^{p}_{"+fl+"}$"
-                    elif Type_of_sets == "nPDFs":
-                        dist = "$xf^{A}_{"+fl+"}$"
                     
                     ##
                     if ylabel != 'none':

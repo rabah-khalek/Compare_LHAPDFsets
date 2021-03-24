@@ -12,6 +12,15 @@
 #-------plots format
 # "vertical","horizontal"
 
+#=========================================================================================
+Global Settings:
+  FFs:
+    colors: ['m', 'c', 'y', 'k']
+  PDFs:
+    colors: ['r', 'b', 'g', '#8c564b']
+  nPDFs:
+    colors: ['#d62728','#1f77b4','#2ca02c', '#ff7f0e'] # 'default' can be used
+#=========================================================================================
 
 test: 
   Setsnames:  [NNPDF31_nlo_as_0118,  NNPDF31_nnlo_as_0118]
