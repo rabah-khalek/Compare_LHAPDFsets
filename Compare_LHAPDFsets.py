@@ -22,10 +22,6 @@ rc('xtick', labelsize=fontsize)
 rc('ytick', labelsize=fontsize)
 py.rcParams['legend.title_fontsize'] = 'xx-large'
 
-#---- to modify
-
-comparison_choices = ["all"]
-# "Absolutes", "Relative Uncertainty", "Ratio"
 colors={}
 
 InputCard = sys.argv[1]
@@ -34,10 +30,14 @@ Fits_catalog = None
 with open(InputCard) as f:
     Fits_catalog = yaml.safe_load(f)
 
+comparison_choices = Fits_catalog['Global Settings']["plot"]
+
 if comparison_choices[0]=="all":
     comparison_choices = list(Fits_catalog.keys())
 
-comparison_choices.remove("Global Settings")
+if 'Global Settings' in comparison_choices:
+    comparison_choices.remove("Global Settings")
+    
 for comparison_choice in comparison_choices:
     print("\n---"+comparison_choice+"---")
 

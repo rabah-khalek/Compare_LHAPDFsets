@@ -20,6 +20,8 @@ Global Settings:
     colors: ['r', 'b', 'g', '#8c564b']
   nPDFs:
     colors: ['#d62728','#1f77b4','#2ca02c', '#ff7f0e'] # 'default' can be used
+  
+  plot: [all]
 #=========================================================================================
 
 test: 
