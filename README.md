@@ -6,6 +6,10 @@ Python3 script that automates the plotting of LHAPDF sets and their stats.
 - LHAPDF
 
 ## Features
+
+### Colors
+![colors](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/main/colors.png)
+
 ### Error types
 See https://arxiv.org/Set/1412.7420.pdf for their definitions:
 - symmhessian
