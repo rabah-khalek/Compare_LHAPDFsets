@@ -32,5 +32,5 @@ See https://arxiv.org/Set/1412.7420.pdf for their definitions:
 Works for any LHAPDF-format.
 
 ### Vertical format
-![Vertical Ratio](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/main/PDFs_fits/vertical/test_RatioPDFs_Q10.png?raw=true)
-![Vertical Relative](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/main/PDFs_fits/vertical/test_RelativePDFs_Q10.png?raw=true)
+![Vertical Ratio](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/main/PDFs_fits/vertical/test_RatioPDFs_Q5.png?raw=true)
+![Vertical Relative](https://github.com/rabah-khalek/Compare_LHAPDFsets/blob/main/PDFs_fits/vertical/test_RelativePDFs_Q5.png?raw=true)
