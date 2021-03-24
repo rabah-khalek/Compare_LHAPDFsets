@@ -169,18 +169,18 @@ for comparison_choice in comparison_choices:
 
                     ##
                     if ifl == 0 and legend:
-                        axs[ifl].plot(X, Y, color=colors[iSet], ls=ls, lw=1.5, label=Setlabels[iSet])
+                        axs[ifl].plot(X, Y, color=colors[Type_of_sets][iSet], ls=ls, lw=1.5, label=Setlabels[iSet])
 
                         if Comparison != "Relative Uncertainty":
                             if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
-                                axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[iSet], edgecolor=colors[iSet], alpha=0.25, lw=0.1)
+                                axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[Type_of_sets][iSet], edgecolor=colors[Type_of_sets][iSet], alpha=0.25, lw=0.1)
 
                         axs[ifl].legend(loc='best', title=r'{\rm \textbf{'+Comparison_title+r'} ($Q=' + '{: .1f}'.format(Q)+r'\, \, {\rm GeV}$) \\}',fontsize=legend_fontsize, ncol=label_ncol, frameon=False)
                     else:
-                        axs[ifl].plot(X, Y, color=colors[iSet], ls=ls, lw=1.5)
+                        axs[ifl].plot(X, Y, color=colors[Type_of_sets][iSet], ls=ls, lw=1.5)
                         if Comparison != "Relative Uncertainty":
                             if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
-                                axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[iSet], edgecolor=colors[iSet], alpha=0.25, lw=0.1)
+                                axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[Type_of_sets][iSet], edgecolor=colors[Type_of_sets][iSet], alpha=0.25, lw=0.1)
                         if ifl == 0 and title:
                             axs[ifl].legend(loc='best', title=r'{\rm \textbf{'+Comparison_title+r'} ($Q=' + '{: .1f}'.format(Q)+r'\, \, {\rm GeV}$) \\}',fontsize=legend_fontsize, ncol=label_ncol, frameon=False)
                     ##
