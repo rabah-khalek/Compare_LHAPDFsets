@@ -21,7 +21,10 @@ Global Settings:
   nPDFs:
     colors: ['#d62728','#1f77b4','#2ca02c', '#ff7f0e'] # 'default' can be used
   
-  plot: [all]
+  plot: [all] # test
+  fontsize: 25
+  legend_fontsize: 25
+  output_format: ".png"
 #=========================================================================================
 
 test: 
@@ -29,29 +32,15 @@ test:
   Setlabels:  ['\rm NNPDF3.1\,(NLO)', '\rm NNPDF3.1\,(NNLO)']
   Error_type: [MC, MC]
   Nreps:      [100, 100]
-  flavors_to_plot: ['\Sigma', 's^+', 'g']
+  flavors_to_plot: ['\Sigma', 'V','s^+', 'c^+', '\bar{u}', 'g']
   Q: 5
-  x: [0.0001, 0.5, 100]
-  plots_format: [vertical] 
+  x: [0.0001, 0.6, 100]
   Type_of_sets: PDFs
-  xaxis_label: 'x'
+  PTO: "" #NLO NNLO
   Comparisons: 
-
-    Ratio: #!
-      xlabel: inside # inside, outside, none
-      ylabel: inside
-      legend: True
-      title: True
-      xticklabels: True
-      yticklabels: True
-
-    Relative Uncertainty: #!
-      xlabel: outside # inside, outside, none
-      ylabel: outside
-      legend: True
-      title: True
-      xticklabels: True
-      yticklabels: True
-      xaxis:
-        xticks: [0.0001]
-        xtickslabels: ['$\rm 10^{-4}$']
+    AbsolutesandRatio: #!
+      ncol: 2
+      LegendPosition: '\Sigma'
+      #xaxis:
+      #  xticks: [0.02, 0.1]
+      #  xtickslabels: ['$\rm 2\times 10^{-2}$', '$\rm 10^{-1}$']
