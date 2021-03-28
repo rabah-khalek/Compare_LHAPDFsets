@@ -22,11 +22,40 @@ See https://arxiv.org/Set/1412.7420.pdf for their definitions:
 - Combinations: '$F_2^{LO}$' '$u^+$' '$d^+$' '$s^+$' '$c^+$' '$b^+$' '$t^+$' '$u^-$' '$d^-$' '$s^-$' '$c^-$' '$b^-$' '$t^-$'
 
 ### Options in Compare_LHAPDFsets.py
-- `Type_of_sets = "PDFs"`
-- `comparison_choices = ["test"]`
-- `comparison_types = ["Absolutes", "Relative Uncertainty", "Ratio"]`
-- `plots_format = ["vertical", "horizontal"]`
-- Implement `comparison_choices` in PDFs_fits.yaml
+```yaml
+#=========================================================================================
+Global Settings:
+  FFs:
+    colors: ['m', 'c', 'y', 'k']
+  PDFs:
+    colors: ['r', 'b', 'g', '#8c564b']
+  nPDFs:
+    colors: ['#d62728','#1f77b4','#2ca02c', '#ff7f0e'] # 'default' can be used
+  
+  plot: [all] # test
+  fontsize: 25
+  legend_fontsize: 25
+  output_format: ".png"
+#=========================================================================================
+
+test: 
+  Setsnames:  [NNPDF31_nlo_as_0118,  NNPDF31_nnlo_as_0118]
+  Setlabels:  ['\rm NNPDF3.1\,(NLO)', '\rm NNPDF3.1\,(NNLO)']
+  Error_type: [MC, MC]
+  Nreps:      [100, 100]
+  flavors_to_plot: ['\Sigma', 'V','s^+', 'c^+', '\bar{u}', 'g']
+  Q: 5
+  x: [0.0001, 0.6, 100]
+  Type_of_sets: PDFs
+  PTO: "" #NLO NNLO
+  Comparisons: 
+    AbsolutesandRatio: #!
+      ncol: 2
+      LegendPosition: '\Sigma'
+      #xaxis:
+      #  xticks: [0.02, 0.1]
+      #  xtickslabels: ['$\rm 2\times 10^{-2}$', '$\rm 10^{-1}$']
+```
 
 ## Output example
 
