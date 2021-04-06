@@ -97,21 +97,23 @@ for comparison_choice in comparison_choices:
         ncol = int(Fits_catalog[comparison_choice]["Comparisons"][Comparison]["ncol"])
 
         if len(flavors_to_plot)>1:
-            if Comparison == "AbsolutesandRatio":
-                fig = py.figure(figsize=(
-                    8.*ncol, 6.*int(round(len(flavors_to_plot)/(ncol*1.)))), constrained_layout = True)
-            else:
-                fig = py.figure(figsize=(8, 6), constrained_layout=True)
+            #if Comparison == "AbsolutesandRatio":
+            fig = py.figure(figsize=(
+                8.*ncol, 6.*int(round(len(flavors_to_plot)/(ncol*1.)+0.01))))#, constrained_layout=True)
+            #else:
+            #    fig = py.figure(figsize=(8*ncol, 6), constrained_layout=True)
         else:
-            fig=py.figure(figsize=(8,6),constrained_layout=True)
+            fig=py.figure(figsize=(8,6))#,constrained_layout=True)
 
+        fig.tight_layout()
         
         if len(flavors_to_plot)>1:
-            gs = fig.add_gridspec(int(round(len(flavors_to_plot)/(ncol*1.))), ncol)
+            gs = fig.add_gridspec(int(round(len(flavors_to_plot)/(ncol*1.)+0.01)), ncol)
         else:
             gs=fig.add_gridspec(1, 1)
 
-        #py.gcf().subplots_adjust(bottom=0.5)
+        #py.gcf().subplots_adjust(wspace=0.5)
+        
 
         axs = []
         axs2=[]
@@ -180,7 +182,9 @@ for comparison_choice in comparison_choices:
                         axs.append(ax1)
                         axs2.append(ax2)
                     else:
-                        ax = py.subplot(gs[ifl,col])
+                        row = int(ifl/ncol)
+                        col = int(ifl % ncol)
+                        ax = py.subplot(gs[row,col])
                         axs.append(ax)
 
                 ##
@@ -276,8 +280,12 @@ for comparison_choice in comparison_choices:
                     ylim = Fits_catalog[comparison_choice]["Comparisons"][Comparison]['ylim']
                     if ylim[ifl]:
                         axs[ifl].set_ylim(ylim[ifl][0], ylim[ifl][1])
-                        if Comparison == "AbsolutesandRatio":
-                            axs2[ifl].set_ylim(ylim[ifl][0], ylim[ifl][1])
+                if Comparison == "AbsolutesandRatio":
+                    axs2[ifl].set_ylim(-0.25, 2.25)
+                    axs2[ifl].set_yticks([0,1,2])
+                    axs2[ifl].set_yticklabels([r'$\rm 0$', r'$\rm 1$', r'$\rm 2$'])
+
+
 
         py.tight_layout()
         py.savefig(outputname+'/'+comparison_choice+'_'+Comparison.split(" ")[0] +
