@@ -69,13 +69,21 @@ for comparison_choice in comparison_choices:
         comparison_choice]["x"][1], Fits_catalog[comparison_choice]["x"][2]
     X = np.logspace(np.log10(xmin), np.log10(xmax), nx)
 
-
+    Sets={}
+    neutron_Sets={}
+    nonuclear_Sets={}
     LHAPDFSets = {}
+    neutron_LHAPDFSets = {}
     for iSet, Setname in enumerate(Setsnames):
         print("Loading "+Setname+"")
         if not Setname in LHAPDFSets.keys():
-            Sets = SETS.Get(Setname, X, Q, Nreps[iSet]+1)
-            LHAPDFSets[Setname] = SETS.GetStats(Sets, Error_type[iSet])
+            Sets[Setname] = SETS.Get(Setname, X, Q, Nreps[iSet]+1)
+            LHAPDFSets[Setname] = SETS.GetStats(Sets[Setname], Error_type[iSet])
+
+            if "NuclearRatio" in Comparisons.keys():
+                neutron_Sets[Setname]  = SETS.Get(Setname, X, Q, Nreps[iSet]+1, True)
+                #nonuclear_Sets[Setname] = {}
+                neutron_LHAPDFSets[Setname]  = SETS.GetStats(neutron_Sets[Setname] , Error_type[iSet])
 
     print("Computing stats of sets is done")
 
@@ -155,6 +163,8 @@ for comparison_choice in comparison_choices:
                     Y_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
                     ls="--"
 
+                    dist=dist+"/"+dist+"(ref)"
+
                 elif Comparison == "AbsolutesandRatio":
                     Y = LHAPDFSets[Setname]["mean"][fl]
                     Y_minus = LOW
@@ -168,6 +178,32 @@ for comparison_choice in comparison_choices:
 
                     dist1=dist
                     dist2="Ratio"
+                
+                elif Comparison == "NuclearRatio":
+                    if "N1" in Setname:
+
+                        A = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["A"]
+                        Z = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["Z"]
+
+                        nonuclear_Sets[fl] = (
+                            1./A)*(Z*Sets[Setname][fl]+(A-Z)*neutron_Sets[Setname][fl])
+                    else:
+                        Nmem = Sets[Setname][fl].shape[0]
+                        Y_rep = Sets[Setname][fl]/nonuclear_Sets[fl]
+                        Y = np.median(Y_rep[1:Nmem, :], axis=0)  # Y_rep[0, :]
+                        
+                        #Y_std = np.std(Y_rep[1:Nmem, :], axis=0)
+                        #Y_minus = Y-Y_std
+                        #Y_plus = Y+Y_std
+
+                        Y_minus = np.nanpercentile(
+                            Y_rep[1:Nmem, :], 16., axis=0)
+                        Y_plus = np.nanpercentile(
+                            Y_rep[1:Nmem, :], 84., axis=0)
+
+                        ls = "-"
+
+                        dist = "$R^{A}_{q}$"
 
                 ##
                 if iSet == 0:
@@ -187,15 +223,22 @@ for comparison_choice in comparison_choices:
                         ax = py.subplot(gs[row,col])
                         axs.append(ax)
 
+                if Comparison == "NuclearRatio" and "N1" in Setname:
+                    continue
+
                 ##
                 if fl == LegendPosition:
-                    axs[ifl].plot(X, Y, color=colors[Type_of_sets][iSet], ls=ls, lw=1.5, label=Setlabels[iSet])
+                    label_suffix=""
+                    if iSet == Ratio_den_Set and Comparison == "Ratio":
+                        label_suffix=" (ref)"
+
+                    axs[ifl].plot(X, Y, color=colors[Type_of_sets][iSet], ls=ls, lw=1.5, label=Setlabels[iSet]+label_suffix)
 
                     if Comparison != "Relative Uncertainty":
                         if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
                             axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[Type_of_sets][iSet], edgecolor=colors[Type_of_sets][iSet], alpha=0.25, lw=0.1)
 
-                    lg = axs[ifl].legend(loc='best', title=r'{\rm \textbf{'+PTO+r'} ($Q=' + '{: .1f}'.format(
+                    lg = axs[ifl].legend(loc='best', title=r'{\rm \textbf{'+PTO+r'} ($\mu=' + '{: .1f}'.format(
                         Q)+r'\, \, {\rm GeV}$) \\}', fontsize=legend_fontsize, ncol=1, frameon=False)
                     lg.get_title().set_fontsize(fontsize=legend_fontsize)
 
@@ -227,12 +270,15 @@ for comparison_choice in comparison_choices:
                 ##
                 if not ifl%ncol:
                     axs[ifl].set_ylabel(r'{\rm \boldmath'+dist+'}', fontsize=fontsize, rotation=90)
-                    axs[ifl].yaxis.set_label_coords(-0.075, 0.5)
+                    axs[ifl].yaxis.set_label_coords(-0.09, 0.5)
                     if Comparison == "AbsolutesandRatio":
                         axs2[ifl].set_ylabel(r'{\rm \textbf{'+dist2+'}}', fontsize=fontsize, rotation=90)
-                        axs2[ifl].yaxis.set_label_coords(-0.075, 0.5)
+                        axs2[ifl].yaxis.set_label_coords(-0.09, 0.5)
                 
-                axs[ifl].text(0.075, 0.9, r'{\rm \boldmath $'+fl+'$}' , horizontalalignment='center', verticalalignment='center', transform=axs[ifl].transAxes, fontsize=fontsize)
+                fl_label_scale=1
+                if fl == 'u^+ + d^+ + s^+':
+                    fl_label_scale=2.75
+                axs[ifl].text(0.075*fl_label_scale, 0.9, r'{\rm \boldmath $'+fl+'$}' , horizontalalignment='center', verticalalignment='center', transform=axs[ifl].transAxes, fontsize=fontsize)
 
                 #https://stackoverflow.com/questions/44078409/matplotlib-semi-log-plot-minor-tick-marks-are-gone-when-range-is-large
                 locmaj = matplotlib.ticker.LogLocator(base=10.0, numticks=12)

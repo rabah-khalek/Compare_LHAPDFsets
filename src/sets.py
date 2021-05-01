@@ -71,7 +71,7 @@ def LHA2EVLN(LHA):
 
     return EVL
 
-def Get(setname, X, q, Replicas):
+def Get(setname, X, q, Replicas, NEUTRON=False):
     SETs = {}
     for Replica in range(0,Replicas):
         # initialization
@@ -110,6 +110,18 @@ def Get(setname, X, q, Replicas):
             if fl != r'g' and fl != r'\gamma':
                 SET[fl] = np.array(SET[fl])
 
+        if NEUTRON:
+            u = np.copy(SET[r'u'])
+            d = np.copy(SET[r'd'])
+            ubar = np.copy(SET[r'\bar{u}'])
+            dbar = np.copy(SET[r'\bar{d}'])
+            SET[r'u']= d
+            SET[r'd'] = u
+            SET[r'\bar{u}'] = dbar
+            SET[r'\bar{d}'] = ubar
+            
+
+
         #combinations
         SET[r'F_2^{LO}'] = SET[r'\Sigma']+(1./4)*SET[r'T_{3}']
         SET[r'u^+'] = SET[r'u']+SET[r'\bar{u}']
@@ -118,6 +130,12 @@ def Get(setname, X, q, Replicas):
         SET[r'c^+'] = SET[r'c']+SET[r'\bar{c}']
         SET[r'b^+'] = SET[r'b']+SET[r'\bar{b}']
         SET[r't^+'] = SET[r't']+SET[r'\bar{t}']
+
+        SET[r'u^+ + d^+ + s^+'] = SET[r'u^+']+SET[r'd^+']+SET[r's^+']
+        SET[r'd^+ + s^+'] = SET[r'd^+']+SET[r's^+']
+        SET[r'u + \bar{d}'] = SET[r'u']+SET[r'\bar{d}']
+        SET[r'u/\bar{d}'] = SET[r'u']/SET[r'\bar{d}']
+        SET[r'u/d'] = SET[r'u']/SET[r'd']
 
         SET[r'u^-'] = SET[r'u']-SET[r'\bar{u}']
         SET[r'd^-'] = SET[r'd']-SET[r'\bar{d}']
