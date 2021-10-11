@@ -163,7 +163,7 @@ for comparison_choice in comparison_choices:
                     Y_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
                     ls="--"
 
-                    dist=dist+"/"+dist+"(ref)"
+                    dist=dist+"/"+dist+" [ref]"
 
                 elif Comparison == "AbsolutesandRatio":
                     Y = LHAPDFSets[Setname]["mean"][fl]
@@ -176,7 +176,7 @@ for comparison_choice in comparison_choices:
                     Y2_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
                     ls2="--"
 
-                    dist1=dist
+                    dist1=dist #+r" $\pm 1-\sigma$"
                     dist2="Ratio"
                 
                 elif Comparison == "NuclearRatio":
@@ -230,7 +230,7 @@ for comparison_choice in comparison_choices:
                 if fl == LegendPosition:
                     label_suffix=""
                     if iSet == Ratio_den_Set and Comparison == "Ratio":
-                        label_suffix=" (ref)"
+                        label_suffix=r" {\rm [ref]}"
 
                     axs[ifl].plot(X, Y, color=colors[Type_of_sets][iSet], ls=ls, lw=1.5, label=Setlabels[iSet]+label_suffix)
 
@@ -239,7 +239,8 @@ for comparison_choice in comparison_choices:
                             axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[Type_of_sets][iSet], edgecolor=colors[Type_of_sets][iSet], alpha=0.25, lw=0.1)
 
                     lg = axs[ifl].legend(loc='best', title=r'{\rm \textbf{'+PTO+r'} ($\mu=' + '{: .1f}'.format(
-                        Q)+r'\, \, {\rm GeV}$) \\}', fontsize=legend_fontsize, ncol=1, frameon=False)
+                        Q)+r'\, \, {\rm GeV}$)\\}', # \textbf{[Preliminary]}\\}',
+                         fontsize=legend_fontsize, ncol=1, frameon=False)
                     lg.get_title().set_fontsize(fontsize=legend_fontsize)
 
                 else:
@@ -265,6 +266,11 @@ for comparison_choice in comparison_choices:
                     axs2[ifl].tick_params(direction='in', which='both')
                     axs2[ifl].tick_params(which='major', length=7)
                     axs2[ifl].tick_params(which='minor', length=4)
+
+                    ##!temp
+
+                if Comparison == "NuclearRatio":
+                    axs[ifl].axhline(y=1, linewidth=1.5, ls='--', color='k')
 
                 
                 ##
