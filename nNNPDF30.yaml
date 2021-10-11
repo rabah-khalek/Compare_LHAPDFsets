@@ -1,0 +1,368 @@
+#------Implemented error types (See https://arxiv.org/Set/1412.7420.pdf):
+#- symmhessian
+#- hessian
+#- MC
+#
+#------Flavours available
+#- Evolution basis: '\gamma' '\Sigma' 'g' 'V' 'V_3' 'V_8' 'V_{15}' 'V_{24}' 'V_{35}' 'T_{3}' 'T_{3}' 'T_{15}' 'T_{24}' 'T_#{35}'
+#- Physical basis: '\bar{t}' '\bar{b}' '\bar{c}' '\bar{s}' '\bar{u}' '\bar{d}' 'g' 'd' 'u' 's' 'c' 'b' 't' '\gamma'
+#- Combinations: 'F_2^{LO}' 'u^+' 'd^+' 's^+' 'c^+' 'b^+' 't^+' 'u^-' 'd^-' 's^-' 'c^-' 'b^-' 't^-'
+#-------Comparison types
+#'Absolutes', 'Relative Uncertainty', 'Ratio'
+#-------plots format
+# 'vertical','horizontal'
+
+#=========================================================================================
+Global Settings:
+  FFs:
+    colors: ['m', 'c', 'y', 'k']
+  PDFs:
+    colors: ['r', 'b', 'g', '#8c564b']
+  nPDFs:
+    colors: ['#d62728','#1f77b4','#2ca02c', '#ff7f0e'] # 'default' can be used '#d62728','#1f77b4','#2ca02c', '#ff7f0e'
+  
+  plot: [nNNPDF30_N1] #[NuclearModification_Pb208,nNNPDF30_Pb208]
+  fontsize: 23.5
+  legend_fontsize: 18.5
+  output_format: '.pdf'
+#=========================================================================================
+
+#-----------------------------------------------------------------------------------------
+baselines: 
+  Setsnames: [nNNPDF20_nlo_as_0118_N1, NNPDF31_nlo_as_0118_pch_nonuc_31_iterated, pp_N5N7N13_250]
+  Setlabels: ['\rm nNNPDF2.0 baseline', '\rm New baseline', '\rm New +LHCb D$^0$ production']
+  Error_type: [MC, MC, MC]
+  Nreps: [250, 500, 249]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.00000001, 1, 100]
+  Type_of_sets: PDFs
+  PTO: NLO
+  Comparisons: 
+    Ratio: #!
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+#-----------------------------------------------------------------------------------------
+Deuterium: 
+  Setsnames: [nNNPDF20_nlo_as_0118_N1, nNNPDF20_nlo_as_0118_D2]
+  Setlabels: ['\rm nNNPDF2.0 (p)', '\rm nNNPDF2.0 (D)']
+  Error_type: [MC, MC]
+  Nreps: [250, 250]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.0001, 1, 100]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    Ratio: #!
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+#-----------------------------------------------------------------------------------------
+020721_nNNPDF30_dijets_Pb208: 
+  Setsnames: [nNNPDF20_nlo_as_0118_Pb208, 020721_nNNPDF30_dijets_Pb208]
+  Setlabels: ['\rm nNNPDF2.0 (Pb)', '\rm nNNPDF2.0* (Pb)']
+  Error_type: [MC, MC]
+  Nreps: [250, 58]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 100
+  x: [0.0001, 1, 100]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    Ratio: #!
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+#-----------------------------------------------------------------------------------------
+040721_nNNPDF30_dijets_N1: 
+  Setsnames: [nNNPDF20_nlo_as_0118_N1, NNPDF31_nlo_as_0118_pch_nonuc_31_iterated, pp_N5N7N13_250]
+  Setlabels: ['\rm nNNPDF2.0 (p)',  '\rm pp\_4.0', '\rm pp\_4.0+N5N7N13']
+  Error_type: [MC, MC, MC]
+  Nreps: [250, 500, 249]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 100
+  x: [0.0000001, 1, 1000]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    AbsolutesandRatio:
+      ncol: 2
+      LegendPosition: 'd'
+
+    Ratio: #!
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+040721_nNNPDF30_dijets_Pb208: 
+  Setsnames: [nNNPDF20_nlo_as_0118_Pb208, 020721_nNNPDF30_dijets_Pb208, 040721_nNNPDF30_dijets_pp_N5N7N13_250_Pb208]
+  Setlabels: ['\rm nNNPDF20 (Pb)', '\rm nNNPDF2.0* (Pb)', '\rm nNNPDF2.0* rw\_BC (Pb)']
+  Error_type: [MC, MC,MC]
+  Nreps: [250, 58, 198]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 100
+  x: [0.0001, 1, 100]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    AbsolutesandRatio:
+      ncol: 2
+      LegendPosition: 'd'
+
+    Ratio: #!
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+#-----------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
+040721_nNNPDF30_dijets_it1_N1: 
+  Setsnames: [pp_N5N7N13_250,040721_nNNPDF30_dijets_pp_N5N7N13_250_N1, 040721_nNNPDF30_dijets_pp_N5N7N13_250_it1_N1]
+  Setlabels: ['\rm pp\_N5N7N13\_250.0',  '\rm nNNPDF2.0* rw\_BC it0 (p)', '\rm nNNPDF2.0* rw\_BC it1 (p)']
+  Error_type: [MC, MC, MC]
+  Nreps: [249, 198, 697]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.0000001, 1, 1000]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    AbsolutesandRatio:
+      ncol: 2
+      LegendPosition: 'd'
+
+    Ratio: #!
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+040721_nNNPDF30_dijets_it1_Pb208: 
+  Setsnames: [040721_nNNPDF30_dijets_pp_N5N7N13_250_Pb208, 040721_nNNPDF30_dijets_pp_N5N7N13_250_it1_Pb208]
+  Setlabels: ['\rm nNNPDF2.0* rw\_BC it0 (Pb)', '\rm nNNPDF2.0* rw\_BC it1 (Pb)']
+  Error_type: [MC,MC]
+  Nreps: [198, 697]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.0001, 1, 100]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    AbsolutesandRatio:
+      ncol: 2
+      LegendPosition: 'd'
+
+    Ratio: #!
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+#-----------------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+test_N1: 
+  Setsnames: [testing_py2_N1,testing_py3_N1]
+  Setlabels: ['\rm py2 (p)',  '\rm py3 (p)']
+  Error_type: [MC, MC, MC]
+  Nreps: [34, 38]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.0000001, 1, 1000]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    Ratio:
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+test_Cu64: 
+  Setsnames: [testing_py2_Cu64,testing_py3_Cu64]
+  Setlabels: ['\rm py2 (Cu64)',  '\rm py3 (Cu64)']
+  Error_type: [MC, MC, MC]
+  Nreps: [34, 38]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.0000001, 1, 1000]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    Ratio:
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+test_Pb208: 
+  Setsnames: [testing_py2_Pb208,testing_py3_Pb208]
+  Setlabels: ['\rm py2 (Pb208)',  '\rm py3 (Pb208)']
+  Error_type: [MC, MC, MC]
+  Nreps: [34, 38]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.0000001, 1, 1000]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    Ratio:
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+#-----------------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+test_opt_N1: 
+  Setsnames: [testing_N1,testing_PR9_N1]
+  Setlabels: ['\rm py2 (p)',  '\rm PR9 (p)']
+  Error_type: [MC, MC, MC]
+  Nreps: [101, 133]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.0000001, 1, 1000]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    Ratio:
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+test_opt_Cu64: 
+  Setsnames: [testing_Cu64,testing_PR9_Cu64]
+  Setlabels: ['\rm py2 (Cu64)',  '\rm PR9 (Cu64)']
+  Error_type: [MC, MC, MC]
+  Nreps: [101, 133]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.0000001, 1, 1000]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    Ratio:
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+test_opt_Pb208: 
+  Setsnames: [testing_Pb208,testing_PR9_Pb208]
+  Setlabels: ['\rm py2 (Pb208)',  '\rm PR9 (Pb208)']
+  Error_type: [MC, MC, MC]
+  Nreps: [101, 133]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.0000001, 1, 1000]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    Ratio:
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+#-----------------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+nNNPDF20r_N1: 
+  Setsnames: [nNNPDF20_nlo_as_0118_N1, 240821_nNNPDF20r_N1]
+  Setlabels: ['\rm nNNPDF2.0 (p)',  '\rm nNNPDF2.0r (p)']
+  Error_type: [MC, MC]
+  Nreps: [250, 413]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.0000001, 1, 1000]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    AbsolutesandRatio:
+      ncol: 2
+      LegendPosition: 'd'
+
+    Ratio: #!
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+nNNPDF20r_Pb208: 
+  Setsnames: [nNNPDF20_nlo_as_0118_Pb208, 240821_nNNPDF20r_Pb208]
+  Setlabels: ['\rm nNNPDF2.0 (Pb)', '\rm nNNPDF2.0r (Pb)']
+  Error_type: [MC, MC]
+  Nreps: [250, 413]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.0001, 1, 100]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    AbsolutesandRatio:
+      ncol: 2
+      LegendPosition: 'd'
+
+    Ratio: #!
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+#-----------------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+NuclearModification_Pb208:   
+  Setsnames:  [101021_nNNPDF30_N1,101021_nNNPDF30_Pb208] 
+  Setlabels: ['N1','\rm nNNPDF3.0 ($^{208}$Pb)']
+  Error_type:    ['MC','MC'] #, 'MC', 'MC']
+  Nreps:         [17, 17] #, 100, 100]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.0001, 1, 1000]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    NuclearRatio: #!
+      A: 208
+      Z: 82
+      ncol: 1
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+nNNPDF30_N1: 
+  Setsnames: [nNNPDF20_nlo_as_0118_N1, 101021_nNNPDF30_N1]
+  Setlabels: ['\rm nNNPDF2.0 (p)', '\rm nNNPDF3.0 (p)']
+  Error_type: [MC, MC]
+  Nreps: [250, 17]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.0001, 1, 100]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    AbsolutesandRatio:
+      ncol: 2
+      LegendPosition: 'd'
+
+    Ratio: #!
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+nNNPDF30_Pb208: 
+  Setsnames: [nNNPDF20_nlo_as_0118_Pb208, 101021_nNNPDF30_Pb208]
+  Setlabels: ['\rm nNNPDF2.0 (Pb)', '\rm nNNPDF3.0 (Pb)']
+  Error_type: [MC, MC]
+  Nreps: [250, 17]
+  flavors_to_plot: ['u', 'd', '\bar{u}', '\bar{d}', 's^+', 'g']
+  Q: 1
+  x: [0.0001, 1, 100]
+  Type_of_sets: nPDFs
+  PTO: NLO
+  Comparisons: 
+    AbsolutesandRatio:
+      ncol: 2
+      LegendPosition: 'd'
+
+    Ratio: #!
+      ncol: 2
+      LegendPosition: 'd'
+      ylim: [[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1],[-0.1,2.1]]
+
+#-----------------------------------------------------------------------------------------
