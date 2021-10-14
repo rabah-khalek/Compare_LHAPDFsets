@@ -74,6 +74,7 @@ for comparison_choice in comparison_choices:
     nonuclear_Sets={}
     LHAPDFSets = {}
     neutron_LHAPDFSets = {}
+    Y_pull={}
     for iSet, Setname in enumerate(Setsnames):
         print("Loading "+Setname+"")
         if not Setname in LHAPDFSets.keys():
@@ -84,6 +85,9 @@ for comparison_choice in comparison_choices:
                 neutron_Sets[Setname]  = SETS.Get(Setname, X, Q, Nreps[iSet]+1, True)
                 #nonuclear_Sets[Setname] = {}
                 neutron_LHAPDFSets[Setname]  = SETS.GetStats(neutron_Sets[Setname] , Error_type[iSet])
+
+            if "NuclearRatio_pull" in Comparisons.keys() and not "N1" in Setname:
+                Y_pull[Setname] = {}
 
     print("Computing stats of sets is done")
 
@@ -130,8 +134,8 @@ for comparison_choice in comparison_choices:
             row=0
             col=0
             for ifl, fl in enumerate(flavors_to_plot):
-                UP = LHAPDFSets[Setname]["mean"][fl]+LHAPDFSets[Setname]["std"][fl]
-                LOW = LHAPDFSets[Setname]["mean"][fl]-LHAPDFSets[Setname]["std"][fl]
+                UP = LHAPDFSets[Setname]["up68"][fl]
+                LOW = LHAPDFSets[Setname]["low68"][fl]
 
                 if Type_of_sets == "FFs":
                     dist = "$zD^{"+hadron+"}_{q}$"
@@ -145,35 +149,35 @@ for comparison_choice in comparison_choices:
 
 
                 if Comparison == "Absolutes":
-                    Y = LHAPDFSets[Setname]["mean"][fl]
+                    Y = LHAPDFSets[Setname]["median"][fl]
                     Y_minus = LOW
                     Y_plus = UP
                     ls="-"
 
                 elif Comparison == "Relative Uncertainty":
-                    Y = (UP-LOW)/LHAPDFSets[Setname]["mean"][fl]
+                    Y = (UP-LOW)/LHAPDFSets[Setname]["median"][fl]
                     Y_minus = None
                     Y_plus = None
                     dist="$\delta($"+dist+"$)\,[\%]$"
                     ls="-"
 
                 elif Comparison == "Ratio":
-                    Y = LHAPDFSets[Setname]["mean"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
-                    Y_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
-                    Y_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
+                    Y = LHAPDFSets[Setname]["median"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
+                    Y_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
+                    Y_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
                     ls="--"
 
                     dist=dist+"/"+dist+" [ref]"
 
                 elif Comparison == "AbsolutesandRatio":
-                    Y = LHAPDFSets[Setname]["mean"][fl]
+                    Y = LHAPDFSets[Setname]["median"][fl]
                     Y_minus = LOW
                     Y_plus = UP
                     ls="-"
 
-                    Y2 = LHAPDFSets[Setname]["mean"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
-                    Y2_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
-                    Y2_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
+                    Y2 = LHAPDFSets[Setname]["median"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
+                    Y2_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
+                    Y2_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
                     ls2="--"
 
                     dist1=dist #+r" $\pm 1-\sigma$"
@@ -201,9 +205,20 @@ for comparison_choice in comparison_choices:
                         Y_plus = np.nanpercentile(
                             Y_rep[1:Nmem, :], 84., axis=0)
 
+                        Y_pull[Setname][fl] = (Y - 1)/(Y_plus-Y)
+
                         ls = "-"
 
                         dist = "$R^{A}_{q}$"
+
+                elif Comparison == "NuclearRatio_pull" and not "N1" in Setname:
+
+                    Y=Y_pull[Setname][fl]
+                    Y_minus=Y_pull[Setname][fl]
+                    Y_plus = Y_pull[Setname][fl]
+
+                    dist = " Pull $(1-R^{A}_{q})/CL)$"
+
 
                 ##
                 if iSet == 0:
@@ -224,6 +239,9 @@ for comparison_choice in comparison_choices:
                         axs.append(ax)
 
                 if Comparison == "NuclearRatio" and "N1" in Setname:
+                    continue
+
+                if Comparison == "NuclearRatio_pull" and "N1" in Setname:
                     continue
 
                 ##
@@ -272,7 +290,10 @@ for comparison_choice in comparison_choices:
                 if Comparison == "NuclearRatio":
                     axs[ifl].axhline(y=1, linewidth=1.5, ls='--', color='k')
 
-                
+
+                if Comparison == "NuclearRatio_pull":
+                    axs[ifl].axhline(y=0, linewidth=1.5, ls='--', color='k')
+
                 ##
                 if not ifl%ncol:
                     axs[ifl].set_ylabel(r'{\rm \boldmath'+dist+'}', fontsize=fontsize, rotation=90)
