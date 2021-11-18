@@ -49,6 +49,15 @@ for comparison_choice in comparison_choices:
     flavors_to_plot = Fits_catalog[comparison_choice]["flavors_to_plot"]
     Comparisons = Fits_catalog[comparison_choice]["Comparisons"]
     Type_of_sets = Fits_catalog[comparison_choice]["Type_of_sets"]
+    if "nucleus" in Fits_catalog[comparison_choice].keys():
+        NUCLEUS = Fits_catalog[comparison_choice]["nucleus"]
+    else:
+        NUCLEUS = ""
+    if "uncertainty" in Fits_catalog[comparison_choice].keys():
+        UNCERTAINTY = Fits_catalog[comparison_choice]["uncertainty"]
+    else:
+        UNCERTAINTY = "68CL"
+    PTO = Fits_catalog[comparison_choice]["PTO"]
     PTO = Fits_catalog[comparison_choice]["PTO"]
     hadron= " "
     if "hadron" in Fits_catalog[comparison_choice].keys():
@@ -86,7 +95,7 @@ for comparison_choice in comparison_choices:
                 #nonuclear_Sets[Setname] = {}
                 neutron_LHAPDFSets[Setname]  = SETS.GetStats(neutron_Sets[Setname] , Error_type[iSet])
 
-            if "NuclearRatio_pull" in Comparisons.keys() and not "N1" in Setname:
+            if "NuclearRatio_pull" in Comparisons.keys() and not "N1" in Setname.split("_"):
                 Y_pull[Setname] = {}
 
     print("Computing stats of sets is done")
@@ -129,13 +138,21 @@ for comparison_choice in comparison_choices:
 
         axs = []
         axs2=[]
+        p1s=[]
+        p2s=[]
+        ps = []
+        labels = []
         for iSet, Setname in enumerate(Setsnames):
             #print (Setname+"")
             row=0
             col=0
             for ifl, fl in enumerate(flavors_to_plot):
-                UP = LHAPDFSets[Setname]["up68"][fl]
-                LOW = LHAPDFSets[Setname]["low68"][fl]
+                if UNCERTAINTY=="68CL":
+                    UP = LHAPDFSets[Setname]["up68"][fl]
+                    LOW = LHAPDFSets[Setname]["low68"][fl]
+                elif UNCERTAINTY=="std":
+                    UP = LHAPDFSets[Setname]["mean"][fl]+LHAPDFSets[Setname]["std"][fl]
+                    LOW = LHAPDFSets[Setname]["mean"][fl] - LHAPDFSets[Setname]["std"][fl]
 
                 if Type_of_sets == "FFs":
                     dist = "$zD^{"+hadron+"}_{q}$"
@@ -149,42 +166,70 @@ for comparison_choice in comparison_choices:
 
 
                 if Comparison == "Absolutes":
-                    Y = LHAPDFSets[Setname]["median"][fl]
+                    if UNCERTAINTY == "68CL":
+                        Y = LHAPDFSets[Setname]["median"][fl]
+                    elif UNCERTAINTY=="std":
+                        Y = LHAPDFSets[Setname]["mean"][fl]
                     Y_minus = LOW
                     Y_plus = UP
                     ls="-"
 
                 elif Comparison == "Relative Uncertainty":
-                    Y = (UP-LOW)/LHAPDFSets[Setname]["median"][fl]
+                    if UNCERTAINTY == "68CL":
+                        Y = (UP-LOW)/LHAPDFSets[Setname]["median"][fl]
+                    elif UNCERTAINTY == "std":
+                        Y = (UP-LOW)/LHAPDFSets[Setname]["mean"][fl]
+
                     Y_minus = None
                     Y_plus = None
                     dist="$\delta($"+dist+"$)\,[\%]$"
                     ls="-"
 
                 elif Comparison == "Ratio":
-                    Y = LHAPDFSets[Setname]["median"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
-                    Y_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
-                    Y_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
+                    if UNCERTAINTY == "68CL":
+                        Y = LHAPDFSets[Setname]["median"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
+                        Y_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
+                        Y_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
+                    elif UNCERTAINTY == "std":
+                        Y = LHAPDFSets[Setname]["mean"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
+                        Y_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
+                        Y_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
                     ls="--"
 
-                    dist=dist+"/"+dist+" [ref]"
+                    if Type_of_sets == "FFs":
+                        dist_den = r"$zD^{"+hadron+" {\rm [ref]}}_{q}$"
+                    elif Type_of_sets == "PDFs":
+                        dist_den = r"$xf^{p {\rm [ref]}}_{q}$"
+                    elif Type_of_sets == "nPDFs":
+                        dist_den = r"$xf^{A {\rm [ref]}}_{q}$"
+
+                    # dist=dist+"/"+dist+" [ref]"
+                    dist=dist+"/"+dist_den
 
                 elif Comparison == "AbsolutesandRatio":
-                    Y = LHAPDFSets[Setname]["median"][fl]
+                    if UNCERTAINTY == "68CL":
+                        Y = LHAPDFSets[Setname]["median"][fl]
+                    elif UNCERTAINTY == "std":
+                        Y = LHAPDFSets[Setname]["mean"][fl]
                     Y_minus = LOW
                     Y_plus = UP
                     ls="-"
 
-                    Y2 = LHAPDFSets[Setname]["median"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
-                    Y2_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
-                    Y2_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
+                    if UNCERTAINTY == "68CL":
+                        Y2 = LHAPDFSets[Setname]["median"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
+                        Y2_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
+                        Y2_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
+                    elif UNCERTAINTY == "std":
+                        Y2 = LHAPDFSets[Setname]["mean"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
+                        Y2_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
+                        Y2_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
                     ls2="--"
 
                     dist1=dist #+r" $\pm 1-\sigma$"
                     dist2="Ratio"
                 
                 elif Comparison == "NuclearRatio":
-                    if "N1" in Setname:
+                    if "N1" in Setname.split("_"):
 
                         A = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["A"]
                         Z = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["Z"]
@@ -194,16 +239,17 @@ for comparison_choice in comparison_choices:
                     else:
                         Nmem = Sets[Setname][fl].shape[0]
                         Y_rep = Sets[Setname][fl]/nonuclear_Sets[fl]
-                        Y = np.median(Y_rep[1:Nmem, :], axis=0)  # Y_rep[0, :]
-                        
-                        #Y_std = np.std(Y_rep[1:Nmem, :], axis=0)
-                        #Y_minus = Y-Y_std
-                        #Y_plus = Y+Y_std
-
-                        Y_minus = np.nanpercentile(
-                            Y_rep[1:Nmem, :], 16., axis=0)
-                        Y_plus = np.nanpercentile(
-                            Y_rep[1:Nmem, :], 84., axis=0)
+                        if UNCERTAINTY == "68CL":
+                            Y = np.median(Y_rep[1:Nmem, :], axis=0)  # Y_rep[0, :]
+                            Y_minus = np.nanpercentile(
+                                Y_rep[1:Nmem, :], 16., axis=0)
+                            Y_plus = np.nanpercentile(
+                                Y_rep[1:Nmem, :], 84., axis=0)
+                        elif UNCERTAINTY == "std":
+                            Y = np.mean(Y_rep[1:Nmem, :], axis=0)
+                            Y_std = np.std(Y_rep[1:Nmem, :], axis=0)
+                            Y_minus = Y-Y_std
+                            Y_plus = Y+Y_std
 
                         Y_pull[Setname][fl] = (Y - 1)/(Y_plus-Y)
 
@@ -211,7 +257,7 @@ for comparison_choice in comparison_choices:
 
                         dist = "$R^{A}_{q}$"
 
-                elif Comparison == "NuclearRatio_pull" and not "N1" in Setname:
+                elif Comparison == "NuclearRatio_pull" and not "N1" in Setname.split("_"):
 
                     Y=Y_pull[Setname][fl]
                     Y_minus=Y_pull[Setname][fl]
@@ -238,10 +284,10 @@ for comparison_choice in comparison_choices:
                         ax = py.subplot(gs[row,col])
                         axs.append(ax)
 
-                if Comparison == "NuclearRatio" and "N1" in Setname:
+                if Comparison == "NuclearRatio" and "N1" in Setname.split("_"):
                     continue
 
-                if Comparison == "NuclearRatio_pull" and "N1" in Setname:
+                if Comparison == "NuclearRatio_pull" and "N1" in Setname.split("_"):
                     continue
 
                 ##
@@ -250,16 +296,23 @@ for comparison_choice in comparison_choices:
                     if iSet == Ratio_den_Set and Comparison == "Ratio":
                         label_suffix=r" {\rm [ref]}"
 
-                    axs[ifl].plot(X, Y, color=colors[Type_of_sets][iSet], ls=ls, lw=1.5, label=Setlabels[iSet]+label_suffix)
+                    p1 = axs[ifl].plot(X, Y, color=colors[Type_of_sets][iSet], ls=ls, lw=1.5)
+                    p1s.append(p1)
+
+                    LABEL =  Setlabels[iSet]+label_suffix
 
                     if Comparison != "Relative Uncertainty":
                         if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
-                            axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[Type_of_sets][iSet], edgecolor=colors[Type_of_sets][iSet], alpha=0.25, lw=0.1)
+                            p2 = axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[Type_of_sets][iSet], edgecolor=colors[Type_of_sets][iSet], alpha=0.25, lw=0.1) #, label=LABEL)
+                            p2 = axs[ifl].fill(np.NaN, np.NaN, facecolor=colors[Type_of_sets][iSet], edgecolor=colors[Type_of_sets][iSet], alpha=0.25, lw=0.1)
+                            p2s.append(p2)
 
-                    lg = axs[ifl].legend(loc='best', title=r'{\rm \textbf{'+PTO+r'} ($\mu=' + '{: .1f}'.format(
-                        Q)+r'\, \, {\rm GeV}$)\\}', # \textbf{[Preliminary]}\\}',
-                         fontsize=legend_fontsize, ncol=1, frameon=False)
-                    lg.get_title().set_fontsize(fontsize=legend_fontsize)
+                    ps.append((p2s[iSet][0], p1s[iSet][0]))
+                    labels.append(LABEL)
+                    #lg = axs[ifl].legend(ps,labels,loc='best', title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'} ($\mu=' + '{: .1f}'.format(
+                    #    Q)+r'\, \, {\rm GeV}$)\\}', # \textbf{[Preliminary]}\\}',
+                    #     fontsize=legend_fontsize, ncol=1, frameon=False, handletextpad=-1.8)
+                    #lg.get_title().set_fontsize(fontsize=legend_fontsize)
 
                 else:
                     axs[ifl].plot(X, Y, color=colors[Type_of_sets][iSet], ls=ls, lw=1.5)
@@ -358,7 +411,34 @@ for comparison_choice in comparison_choices:
                     axs2[ifl].set_yticks([0,1,2])
                     axs2[ifl].set_yticklabels([r'$\rm 0$', r'$\rm 1$', r'$\rm 2$'])
 
+        #ps = []
+        #labels = []
+        #for iSet, Setname in enumerate(Setsnames):
+        #    ps.append((p2s[iSet][0], p1s[iSet][0]))
+        #    labels.append(LABEL)
 
+        if UNCERTAINTY == "68CL":
+            #LABEL = r'{\rm {\large $~^{68\%~{\rm CL}}$} ~~' + Setlabels[iSet]+label_suffix
+            UNCLABEL =  [r'{\rm median}', r'{\rm 68\% CL}']
+        elif UNCERTAINTY == "std":
+            #LABEL = r'{\rm {\large $~^{\pm~\sigma}$} ~~~~~' + Setlabels[iSet]+label_suffix
+            UNCLABEL =  [r'{\rm mean}', r'$\pm \sigma$']
+
+        for ifl, fl in enumerate(flavors_to_plot):
+            if fl == LegendPosition:
+                lg = axs[ifl].legend(ps,labels,loc='lower right', title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'}\\}', # \textbf{[Preliminary]}\\}',
+                        fontsize=legend_fontsize, ncol=1, frameon=False)#, handletextpad=-1.8)
+                lg.get_title().set_fontsize(fontsize=legend_fontsize)
+
+                axs[ifl+1].plot(np.NaN, np.NaN, color='black', ls=ls, lw=1.5,label=UNCLABEL[0])
+                axs[ifl+1].fill(np.NaN, np.NaN, facecolor='black', edgecolor='black', alpha=0.25, lw=0.1,label=UNCLABEL[1])
+                lg2 = axs[ifl+1].legend(loc='lower center', title=r'{\rm $\mu=' + '{: .1f}'.format(
+                    Q)+r'\, \, {\rm GeV}$\\}',  # \textbf{[Preliminary]}\\}',
+                        fontsize=legend_fontsize, ncol=1, frameon=False)
+                #lg2 = axs[ifl+1].legend([],[],loc='upper right', title=r'{\rm $\mu=' + '{: .1f}'.format(
+                #    Q)+r'\, \, {\rm GeV}$\\'+UNCLABEL+r'}',  # \textbf{[Preliminary]}\\}',
+                #        fontsize=legend_fontsize, ncol=1, frameon=False, handletextpad=-1.8)
+                lg2.get_title().set_fontsize(fontsize=legend_fontsize)
 
         py.tight_layout()
         py.savefig(outputname+'/'+comparison_choice+'_'+Comparison.split(" ")[0] +
