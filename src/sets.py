@@ -184,20 +184,32 @@ def GetStats(SETs, Error_type):
             SETs["std"][fl] = np.std(SETs[fl][1:Nmem,:], axis=0)
             
         elif Error_type == "hessian":
-            SETs["mean"][fl] = SETs[fl][0, :]
+            SETs["median"][fl] = SETs[fl][0, :]
+            SETs["mean"][fl] = SETs["median"][fl]
             SETs["std"][fl] = np.zeros(Nx)
             for im in range(0, int((Nmem-1)/2)):
                 fp = SETs[fl][2*im+1, :]
                 fm = SETs[fl][2*im+2, :]
                 SETs["std"][fl] += (fp-fm)**2
             SETs["std"][fl] = np.sqrt(SETs["std"][fl])/2
+            #the user should know if the set correspond to 68 or 90 from the .info file
+            SETs["low90"][fl] = SETs["median"][fl]-SETs["std"][fl]
+            SETs["up90"][fl] = SETs["median"][fl]+SETs["std"][fl]
+            SETs["low68"][fl] = SETs["median"][fl]-SETs["std"][fl]
+            SETs["up68"][fl] = SETs["median"][fl]+SETs["std"][fl]
 
         elif Error_type == "symmhessian":
-            SETs["mean"][fl] = SETs[fl][0, :]
+            SETs["median"][fl] = SETs[fl][0, :]
+            SETs["mean"][fl] = SETs["median"][fl]
             SETs["std"][fl] = np.zeros(Nx)
             for im in range(1, Nmem):
                 f = SETs[fl][im, :]
                 SETs["std"][fl] += (f-SETs["mean"][fl] )**2
+            #the user should know if the set correspond to 68 or 90 from the .info file
             SETs["std"][fl] = np.sqrt(SETs["std"][fl])
+            SETs["low90"][fl] = SETs["median"][fl]-SETs["std"][fl]
+            SETs["up90"][fl] = SETs["median"][fl]+SETs["std"][fl]
+            SETs["low68"][fl] = SETs["median"][fl]-SETs["std"][fl]
+            SETs["up68"][fl] = SETs["median"][fl]+SETs["std"][fl]
 
     return SETs

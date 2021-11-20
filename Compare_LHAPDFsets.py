@@ -14,6 +14,8 @@ import src.sets as SETS
 
 Ratio_den_Set = 0  # 0 for the first PDF to be chosen as denominator in the ratio
 
+N1s = ["_N1", "CT14nlo", "nCTEQ15WZSIH_1_1"]
+
 #---- plotting settings
 
 colors={}
@@ -95,7 +97,7 @@ for comparison_choice in comparison_choices:
                 #nonuclear_Sets[Setname] = {}
                 neutron_LHAPDFSets[Setname]  = SETS.GetStats(neutron_Sets[Setname] , Error_type[iSet])
 
-            if "NuclearRatio_pull" in Comparisons.keys() and not "N1" in Setname.split("_"):
+            if "NuclearRatio_pull" in Comparisons.keys() and (not any(ext in Setname for ext in N1s) or Setname=="EPPS16nlo_CT14nlo_Pb208"):
                 Y_pull[Setname] = {}
 
     print("Computing stats of sets is done")
@@ -150,6 +152,9 @@ for comparison_choice in comparison_choices:
                 if UNCERTAINTY=="68CL":
                     UP = LHAPDFSets[Setname]["up68"][fl]
                     LOW = LHAPDFSets[Setname]["low68"][fl]
+                elif UNCERTAINTY=="90CL":
+                    UP = LHAPDFSets[Setname]["up90"][fl]
+                    LOW = LHAPDFSets[Setname]["low90"][fl]
                 elif UNCERTAINTY=="std":
                     UP = LHAPDFSets[Setname]["mean"][fl]+LHAPDFSets[Setname]["std"][fl]
                     LOW = LHAPDFSets[Setname]["mean"][fl] - LHAPDFSets[Setname]["std"][fl]
@@ -166,7 +171,7 @@ for comparison_choice in comparison_choices:
 
 
                 if Comparison == "Absolutes":
-                    if UNCERTAINTY == "68CL":
+                    if UNCERTAINTY == "68CL" or UNCERTAINTY == "90CL":
                         Y = LHAPDFSets[Setname]["median"][fl]
                     elif UNCERTAINTY=="std":
                         Y = LHAPDFSets[Setname]["mean"][fl]
@@ -175,7 +180,7 @@ for comparison_choice in comparison_choices:
                     ls="-"
 
                 elif Comparison == "Relative Uncertainty":
-                    if UNCERTAINTY == "68CL":
+                    if UNCERTAINTY == "68CL" or UNCERTAINTY == "90CL":
                         Y = (UP-LOW)/LHAPDFSets[Setname]["median"][fl]
                     elif UNCERTAINTY == "std":
                         Y = (UP-LOW)/LHAPDFSets[Setname]["mean"][fl]
@@ -186,7 +191,7 @@ for comparison_choice in comparison_choices:
                     ls="-"
 
                 elif Comparison == "Ratio":
-                    if UNCERTAINTY == "68CL":
+                    if UNCERTAINTY == "68CL" or UNCERTAINTY == "90CL":
                         Y = LHAPDFSets[Setname]["median"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
                         Y_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
                         Y_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
@@ -207,7 +212,7 @@ for comparison_choice in comparison_choices:
                     dist=dist+"/"+dist_den
 
                 elif Comparison == "AbsolutesandRatio":
-                    if UNCERTAINTY == "68CL":
+                    if UNCERTAINTY == "68CL" or UNCERTAINTY == "90CL":
                         Y = LHAPDFSets[Setname]["median"][fl]
                     elif UNCERTAINTY == "std":
                         Y = LHAPDFSets[Setname]["mean"][fl]
@@ -215,7 +220,7 @@ for comparison_choice in comparison_choices:
                     Y_plus = UP
                     ls="-"
 
-                    if UNCERTAINTY == "68CL":
+                    if UNCERTAINTY == "68CL" or UNCERTAINTY == "90CL":
                         Y2 = LHAPDFSets[Setname]["median"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
                         Y2_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
                         Y2_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
@@ -229,27 +234,48 @@ for comparison_choice in comparison_choices:
                     dist2="Ratio"
                 
                 elif Comparison == "NuclearRatio":
-                    if "N1" in Setname.split("_"):
+                    if any(ext in Setname for ext in N1s) and Setname!="EPPS16nlo_CT14nlo_Pb208":
 
                         A = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["A"]
                         Z = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["Z"]
-
-                        nonuclear_Sets[fl] = (
-                            1./A)*(Z*Sets[Setname][fl]+(A-Z)*neutron_Sets[Setname][fl])
+                        
+                        if Error_type[iSet]=="MC":
+                            nonuclear_Sets[fl] = (
+                                1./A)*(Z*Sets[Setname][fl]+(A-Z)*neutron_Sets[Setname][fl])
+                        elif "hessian" in Error_type[iSet]:
+                            nonuclear_Sets[fl] = (
+                                1./A)*(Z*LHAPDFSets[Setname]["median"][fl]+(A-Z)*neutron_LHAPDFSets[Setname]["median"][fl])
                     else:
-                        Nmem = Sets[Setname][fl].shape[0]
-                        Y_rep = Sets[Setname][fl]/nonuclear_Sets[fl]
-                        if UNCERTAINTY == "68CL":
-                            Y = np.median(Y_rep[1:Nmem, :], axis=0)  # Y_rep[0, :]
-                            Y_minus = np.nanpercentile(
-                                Y_rep[1:Nmem, :], 16., axis=0)
-                            Y_plus = np.nanpercentile(
-                                Y_rep[1:Nmem, :], 84., axis=0)
-                        elif UNCERTAINTY == "std":
-                            Y = np.mean(Y_rep[1:Nmem, :], axis=0)
-                            Y_std = np.std(Y_rep[1:Nmem, :], axis=0)
-                            Y_minus = Y-Y_std
-                            Y_plus = Y+Y_std
+                        if Error_type[iSet]=="MC":
+                            Nmem = Sets[Setname][fl].shape[0]
+                            Y_rep = Sets[Setname][fl]/nonuclear_Sets[fl]
+                            if UNCERTAINTY == "68CL":
+                                Y = np.median(Y_rep[1:Nmem, :], axis=0)  # Y_rep[0, :]
+                                Y_minus = np.nanpercentile(
+                                    Y_rep[1:Nmem, :], 16., axis=0)
+                                Y_plus = np.nanpercentile(
+                                    Y_rep[1:Nmem, :], 84., axis=0)
+                                
+                            elif UNCERTAINTY == "90CL":
+                                Y = np.median(Y_rep[1:Nmem, :], axis=0)  # Y_rep[0, :]
+                                Y_minus = np.nanpercentile(
+                                    Y_rep[1:Nmem, :], 5., axis=0)
+                                Y_plus = np.nanpercentile(
+                                    Y_rep[1:Nmem, :], 95., axis=0)
+                                
+                            elif UNCERTAINTY == "std":
+                                Y = np.mean(Y_rep[1:Nmem, :], axis=0)
+                                Y_std = np.std(Y_rep[1:Nmem, :], axis=0)
+                                Y_minus = Y-Y_std
+                                Y_plus = Y+Y_std
+                                
+                        elif "hessian" in Error_type[iSet]:
+                            #!to check
+                            Y = LHAPDFSets[Setname]["median"][fl]/nonuclear_Sets[fl]
+                            Y_minus = LHAPDFSets[Setname]["up90"][fl]/nonuclear_Sets[fl]
+                            Y_plus = LHAPDFSets[Setname]["low90"][fl]/nonuclear_Sets[fl]
+                            
+
 
                         Y_pull[Setname][fl] = (Y - 1)/(Y_plus-Y)
 
@@ -257,13 +283,13 @@ for comparison_choice in comparison_choices:
 
                         dist = "$R^{A}_{q}$"
 
-                elif Comparison == "NuclearRatio_pull" and not "N1" in Setname.split("_"):
+                elif Comparison == "NuclearRatio_pull" and not any(ext in Setname for ext in N1s) or Setname=="EPPS16nlo_CT14nlo_Pb208":
 
                     Y=Y_pull[Setname][fl]
                     Y_minus=Y_pull[Setname][fl]
                     Y_plus = Y_pull[Setname][fl]
 
-                    dist = " Pull $(1-R^{A}_{q})/CL)$"
+                    dist = " Pull $(R^{A}_{q}-1)/{\rm "+UNCERTAINTY+"})$"
 
 
                 ##
@@ -284,10 +310,10 @@ for comparison_choice in comparison_choices:
                         ax = py.subplot(gs[row,col])
                         axs.append(ax)
 
-                if Comparison == "NuclearRatio" and "N1" in Setname.split("_"):
+                if Comparison == "NuclearRatio" and any(ext in Setname for ext in N1s) and Setname!="EPPS16nlo_CT14nlo_Pb208":
                     continue
 
-                if Comparison == "NuclearRatio_pull" and "N1" in Setname.split("_"):
+                if Comparison == "NuclearRatio_pull" and any(ext in Setname for ext in N1s) and Setname!="EPPS16nlo_CT14nlo_Pb208":
                     continue
 
                 ##
@@ -297,18 +323,18 @@ for comparison_choice in comparison_choices:
                         label_suffix=r" {\rm [ref]}"
 
                     p1 = axs[ifl].plot(X, Y, color=colors[Type_of_sets][iSet], ls=ls, lw=1.5)
-                    p1s.append(p1)
+                    #p1s.append(p1)
 
                     LABEL =  Setlabels[iSet]+label_suffix
 
                     if Comparison != "Relative Uncertainty":
                         if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
-                            p2 = axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[Type_of_sets][iSet], edgecolor=colors[Type_of_sets][iSet], alpha=0.25, lw=0.1) #, label=LABEL)
+                            axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[Type_of_sets][iSet], edgecolor=colors[Type_of_sets][iSet], alpha=0.25, lw=0.1) #, label=LABEL)
                             p2 = axs[ifl].fill(np.NaN, np.NaN, facecolor=colors[Type_of_sets][iSet], edgecolor=colors[Type_of_sets][iSet], alpha=0.25, lw=0.1)
-                            p2s.append(p2)
+                            #p2s.append(p2)
 
-                    ps.append((p2s[iSet][0], p1s[iSet][0]))
-                    labels.append(LABEL)
+                            ps.append((p2[0], p1[0]))
+                            labels.append(LABEL)
                     #lg = axs[ifl].legend(ps,labels,loc='best', title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'} ($\mu=' + '{: .1f}'.format(
                     #    Q)+r'\, \, {\rm GeV}$)\\}', # \textbf{[Preliminary]}\\}',
                     #     fontsize=legend_fontsize, ncol=1, frameon=False, handletextpad=-1.8)
@@ -420,25 +446,35 @@ for comparison_choice in comparison_choices:
         if UNCERTAINTY == "68CL":
             #LABEL = r'{\rm {\large $~^{68\%~{\rm CL}}$} ~~' + Setlabels[iSet]+label_suffix
             UNCLABEL =  [r'{\rm median}', r'{\rm 68\% CL}']
+        elif UNCERTAINTY == "90CL":
+            #LABEL = r'{\rm {\large $~^{68\%~{\rm CL}}$} ~~' + Setlabels[iSet]+label_suffix
+            UNCLABEL =  [r'{\rm median}', r'{\rm 90\% CL}']
         elif UNCERTAINTY == "std":
             #LABEL = r'{\rm {\large $~^{\pm~\sigma}$} ~~~~~' + Setlabels[iSet]+label_suffix
             UNCLABEL =  [r'{\rm mean}', r'$\pm \sigma$']
 
-        for ifl, fl in enumerate(flavors_to_plot):
-            if fl == LegendPosition:
-                lg = axs[ifl].legend(ps,labels,loc='lower right', title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'}\\}', # \textbf{[Preliminary]}\\}',
-                        fontsize=legend_fontsize, ncol=1, frameon=False)#, handletextpad=-1.8)
-                lg.get_title().set_fontsize(fontsize=legend_fontsize)
+        if Comparison != "Relative Uncertainty":
+            if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
+                for ifl, fl in enumerate(flavors_to_plot):
+                    if fl == LegendPosition:
+                        lg = axs[ifl].legend(ps,labels,loc='upper right', title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'}\\}', # \textbf{[Preliminary]}\\}',
+                                fontsize=legend_fontsize, ncol=1, frameon=False)#, handletextpad=-1.8)
+                        lg.get_title().set_fontsize(fontsize=legend_fontsize)
 
-                axs[ifl+1].plot(np.NaN, np.NaN, color='black', ls=ls, lw=1.5,label=UNCLABEL[0])
-                axs[ifl+1].fill(np.NaN, np.NaN, facecolor='black', edgecolor='black', alpha=0.25, lw=0.1,label=UNCLABEL[1])
-                lg2 = axs[ifl+1].legend(loc='lower center', title=r'{\rm $\mu=' + '{: .1f}'.format(
-                    Q)+r'\, \, {\rm GeV}$\\}',  # \textbf{[Preliminary]}\\}',
-                        fontsize=legend_fontsize, ncol=1, frameon=False)
-                #lg2 = axs[ifl+1].legend([],[],loc='upper right', title=r'{\rm $\mu=' + '{: .1f}'.format(
-                #    Q)+r'\, \, {\rm GeV}$\\'+UNCLABEL+r'}',  # \textbf{[Preliminary]}\\}',
-                #        fontsize=legend_fontsize, ncol=1, frameon=False, handletextpad=-1.8)
-                lg2.get_title().set_fontsize(fontsize=legend_fontsize)
+                        axs[ifl+1].plot(np.NaN, np.NaN, color='black', ls=ls, lw=1.5,label=UNCLABEL[0])
+                        axs[ifl+1].fill(np.NaN, np.NaN, facecolor='black', edgecolor='black', alpha=0.25, lw=0.1,label=UNCLABEL[1])
+                        lg2 = axs[ifl+1].legend(loc='upper center', title=r'{\rm $\mu=' + '{: .1f}'.format(
+                            Q)+r'\, \, {\rm GeV}$\\}',  # \textbf{[Preliminary]}\\}',
+                                fontsize=legend_fontsize, ncol=1, frameon=False)
+                        #lg2 = axs[ifl+1].legend([],[],loc='upper right', title=r'{\rm $\mu=' + '{: .1f}'.format(
+                        #    Q)+r'\, \, {\rm GeV}$\\'+UNCLABEL+r'}',  # \textbf{[Preliminary]}\\}',
+                        #        fontsize=legend_fontsize, ncol=1, frameon=False, handletextpad=-1.8)
+                        lg2.get_title().set_fontsize(fontsize=legend_fontsize)
+        else:
+            lg = axs[ifl].legend(ps,labels,loc='best', title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'} ($\mu=' + '{: .1f}'.format(
+                Q)+r'\, \, {\rm GeV}$)\\}', # \textbf{[Preliminary]}\\}',
+                 fontsize=legend_fontsize, ncol=1, frameon=False)
+            lg.get_title().set_fontsize(fontsize=legend_fontsize)
 
         py.tight_layout()
         py.savefig(outputname+'/'+comparison_choice+'_'+Comparison.split(" ")[0] +
