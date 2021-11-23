@@ -243,8 +243,11 @@ for comparison_choice in comparison_choices:
                             nonuclear_Sets[fl] = (
                                 1./A)*(Z*Sets[Setname][fl]+(A-Z)*neutron_Sets[Setname][fl])
                         elif "hessian" in Error_type[iSet]:
+                            #if "nCTEQ15" in Setname:
+                            #    nonuclear_Sets[fl] = LHAPDFSets[Setname]["median"][fl] #Sets[Setname][fl] #
+                            #else:
                             nonuclear_Sets[fl] = (
-                                1./A)*(Z*LHAPDFSets[Setname]["median"][fl]+(A-Z)*neutron_LHAPDFSets[Setname]["median"][fl])
+                                    1./A)*(Z*LHAPDFSets[Setname]["median"][fl]+(A-Z)*neutron_LHAPDFSets[Setname]["median"][fl])
                     else:
                         if Error_type[iSet]=="MC":
                             Nmem = Sets[Setname][fl].shape[0]
@@ -271,10 +274,44 @@ for comparison_choice in comparison_choices:
                                 
                         elif "hessian" in Error_type[iSet]:
                             #!to check
-                            Y = LHAPDFSets[Setname]["median"][fl]/nonuclear_Sets[fl]
-                            Y_minus = LHAPDFSets[Setname]["up90"][fl]/nonuclear_Sets[fl]
-                            Y_plus = LHAPDFSets[Setname]["low90"][fl]/nonuclear_Sets[fl]
-                            
+                            #if "nCTEQ15" in Setname:
+                            #    Y = (1./A)*(Z*LHAPDFSets[Setname]["median"][fl]+(
+                            #        A-Z)*neutron_LHAPDFSets[Setname]["median"][fl])/nonuclear_Sets[fl]
+                            #    Nmem = Sets[Setname][fl].shape[0]
+                            #    print(Sets[Setname][fl].shape, neutron_Sets[Setname][fl].shape)
+                            #    Y_rep = Sets[Setname][fl]/((
+                            #        1./A)*(Z*Sets[Setname][fl]+(A-Z)*neutron_Sets[Setname][fl]))
+                            #    std = np.zeros(Sets[Setname][fl].shape[1])
+                            #    for im in range(1, Nmem):
+                            #        f = Y_rep[im, :]
+                            #        std += (f-Y )**2
+                            #    std=np.sqrt(std)
+                                #the user should know if the set correspond to 68 or 90 from the .info file
+                            #    Y_minus = Y-std
+                            #    Y_plus = Y+std
+                            #else:
+                            if "nCTEQ15" in Setname:
+                                Y = (1./A)*(Z*LHAPDFSets[Setname]["median"][fl]+(
+                                    A-Z)*neutron_LHAPDFSets[Setname]["median"][fl])/nonuclear_Sets[fl]
+                                if UNCERTAINTY=="68CL":
+                                    Y_plus = (1./A)*(Z*LHAPDFSets[Setname]["up68"][fl]+(
+                                        A-Z)*neutron_LHAPDFSets[Setname]["up68"][fl])/nonuclear_Sets[fl]
+                                    Y_minus = (1./A)*(Z*LHAPDFSets[Setname]["low68"][fl]+(
+                                        A-Z)*neutron_LHAPDFSets[Setname]["low68"][fl])/nonuclear_Sets[fl]
+                                elif UNCERTAINTY=="90CL":
+                                    Y_plus = (1./A)*(Z*LHAPDFSets[Setname]["up90"][fl]+(
+                                        A-Z)*neutron_LHAPDFSets[Setname]["up90"][fl])/nonuclear_Sets[fl]
+                                    Y_minus = (1./A)*(Z*LHAPDFSets[Setname]["low90"][fl]+(
+                                        A-Z)*neutron_LHAPDFSets[Setname]["low90"][fl])/nonuclear_Sets[fl]
+                            else:
+                                Y = LHAPDFSets[Setname]["median"][fl]/nonuclear_Sets[fl]
+                                if UNCERTAINTY == "68CL":
+                                    Y_plus= LHAPDFSets[Setname]["up68"][fl]/nonuclear_Sets[fl]
+                                    Y_minus= LHAPDFSets[Setname]["low68"][fl]/nonuclear_Sets[fl]
+                                elif UNCERTAINTY == "90CL":
+                                    Y_plus= LHAPDFSets[Setname]["up90"][fl]/nonuclear_Sets[fl]
+                                    Y_minus= LHAPDFSets[Setname]["low90"][fl]/nonuclear_Sets[fl]
+                                
 
 
                         Y_pull[Setname][fl] = (Y - 1)/(Y_plus-Y)
@@ -289,7 +326,7 @@ for comparison_choice in comparison_choices:
                     Y_minus=Y_pull[Setname][fl]
                     Y_plus = Y_pull[Setname][fl]
 
-                    dist = " Pull $(R^{A}_{q}-1)/{\rm "+UNCERTAINTY+"})$"
+                    dist = r" Pull $(R^{A}_{q}-1)/$ \textbf{"+UNCERTAINTY+"}"
 
 
                 ##
@@ -323,7 +360,7 @@ for comparison_choice in comparison_choices:
                         label_suffix=r" {\rm [ref]}"
 
                     p1 = axs[ifl].plot(X, Y, color=colors[Type_of_sets][iSet], ls=ls, lw=1.5)
-                    #p1s.append(p1)
+                    p1s.append(p1[0])
 
                     LABEL =  Setlabels[iSet]+label_suffix
 
@@ -332,9 +369,9 @@ for comparison_choice in comparison_choices:
                             axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=colors[Type_of_sets][iSet], edgecolor=colors[Type_of_sets][iSet], alpha=0.25, lw=0.1) #, label=LABEL)
                             p2 = axs[ifl].fill(np.NaN, np.NaN, facecolor=colors[Type_of_sets][iSet], edgecolor=colors[Type_of_sets][iSet], alpha=0.25, lw=0.1)
                             #p2s.append(p2)
-
                             ps.append((p2[0], p1[0]))
-                            labels.append(LABEL)
+                    
+                    labels.append(LABEL)
                     #lg = axs[ifl].legend(ps,labels,loc='best', title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'} ($\mu=' + '{: .1f}'.format(
                     #    Q)+r'\, \, {\rm GeV}$)\\}', # \textbf{[Preliminary]}\\}',
                     #     fontsize=legend_fontsize, ncol=1, frameon=False, handletextpad=-1.8)
@@ -368,11 +405,12 @@ for comparison_choice in comparison_choices:
 
                 if Comparison == "NuclearRatio":
                     axs[ifl].axhline(y=1, linewidth=1.5, ls='--', color='k')
+                    
 
 
                 if Comparison == "NuclearRatio_pull":
                     axs[ifl].axhline(y=0, linewidth=1.5, ls='--', color='k')
-
+                    axs[ifl].axhline(y=-3, linewidth=1.5, ls='dotted', color='r')
                 ##
                 if not ifl%ncol:
                     axs[ifl].set_ylabel(r'{\rm \boldmath'+dist+'}', fontsize=fontsize, rotation=90)
@@ -453,11 +491,11 @@ for comparison_choice in comparison_choices:
             #LABEL = r'{\rm {\large $~^{\pm~\sigma}$} ~~~~~' + Setlabels[iSet]+label_suffix
             UNCLABEL =  [r'{\rm mean}', r'$\pm \sigma$']
 
-        if Comparison != "Relative Uncertainty":
+        if Comparison != "Relative Uncertainty" and Comparison != "NuclearRatio_pull":
             if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
                 for ifl, fl in enumerate(flavors_to_plot):
                     if fl == LegendPosition:
-                        lg = axs[ifl].legend(ps,labels,loc='upper right', title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'}\\}', # \textbf{[Preliminary]}\\}',
+                        lg = axs[ifl].legend(ps,labels,loc='upper center', title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'}\\}', # \textbf{[Preliminary]}\\}',
                                 fontsize=legend_fontsize, ncol=1, frameon=False)#, handletextpad=-1.8)
                         lg.get_title().set_fontsize(fontsize=legend_fontsize)
 
@@ -471,10 +509,12 @@ for comparison_choice in comparison_choices:
                         #        fontsize=legend_fontsize, ncol=1, frameon=False, handletextpad=-1.8)
                         lg2.get_title().set_fontsize(fontsize=legend_fontsize)
         else:
-            lg = axs[ifl].legend(ps,labels,loc='best', title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'} ($\mu=' + '{: .1f}'.format(
-                Q)+r'\, \, {\rm GeV}$)\\}', # \textbf{[Preliminary]}\\}',
-                 fontsize=legend_fontsize, ncol=1, frameon=False)
-            lg.get_title().set_fontsize(fontsize=legend_fontsize)
+            for ifl, fl in enumerate(flavors_to_plot):
+                if fl == LegendPosition:
+                    lg = axs[ifl].legend(p1s, labels, loc='upper center', title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'} ($\mu=' + '{: .1f}'.format(
+                        Q)+r'\, \, {\rm GeV}$)\\}', # \textbf{[Preliminary]}\\}',
+                        fontsize=legend_fontsize, ncol=1, frameon=False)
+                    lg.get_title().set_fontsize(fontsize=legend_fontsize)
 
         py.tight_layout()
         py.savefig(outputname+'/'+comparison_choice+'_'+Comparison.split(" ")[0] +
