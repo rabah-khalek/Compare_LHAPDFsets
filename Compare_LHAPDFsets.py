@@ -274,35 +274,39 @@ for comparison_choice in comparison_choices:
                                 
                         elif "hessian" in Error_type[iSet]:
                             #!to check
-                            #if "nCTEQ15" in Setname:
-                            #    Y = (1./A)*(Z*LHAPDFSets[Setname]["median"][fl]+(
-                            #        A-Z)*neutron_LHAPDFSets[Setname]["median"][fl])/nonuclear_Sets[fl]
-                            #    Nmem = Sets[Setname][fl].shape[0]
-                            #    print(Sets[Setname][fl].shape, neutron_Sets[Setname][fl].shape)
-                            #    Y_rep = Sets[Setname][fl]/((
-                            #        1./A)*(Z*Sets[Setname][fl]+(A-Z)*neutron_Sets[Setname][fl]))
-                            #    std = np.zeros(Sets[Setname][fl].shape[1])
-                            #    for im in range(1, Nmem):
-                            #        f = Y_rep[im, :]
-                            #        std += (f-Y )**2
-                            #    std=np.sqrt(std)
-                                #the user should know if the set correspond to 68 or 90 from the .info file
-                            #    Y_minus = Y-std
-                            #    Y_plus = Y+std
-                            #else:
                             if "nCTEQ15" in Setname:
                                 Y = (1./A)*(Z*LHAPDFSets[Setname]["median"][fl]+(
                                     A-Z)*neutron_LHAPDFSets[Setname]["median"][fl])/nonuclear_Sets[fl]
+                                Nmem = Sets[Setname][fl].shape[0]
+                                Y_rep = (Z*Sets[Setname][fl]+(A-Z)*neutron_Sets[Setname][fl])/((Z*Sets["nCTEQ15WZSIH_1_1"][fl]+(A-Z)*neutron_Sets["nCTEQ15WZSIH_1_1"][fl]))
+                                std = np.zeros(Sets[Setname][fl].shape[1])
+                                for im in range(1, Nmem):
+                                    f = Y_rep[im, :]
+                                    std += (f-Y )**2
+                                std=np.sqrt(std)
+                            #the user should know if the set correspond to 68 or
+                            #90 from the .info file
                                 if UNCERTAINTY=="68CL":
-                                    Y_plus = (1./A)*(Z*LHAPDFSets[Setname]["up68"][fl]+(
-                                        A-Z)*neutron_LHAPDFSets[Setname]["up68"][fl])/nonuclear_Sets[fl]
-                                    Y_minus = (1./A)*(Z*LHAPDFSets[Setname]["low68"][fl]+(
-                                        A-Z)*neutron_LHAPDFSets[Setname]["low68"][fl])/nonuclear_Sets[fl]
-                                elif UNCERTAINTY=="90CL":
-                                    Y_plus = (1./A)*(Z*LHAPDFSets[Setname]["up90"][fl]+(
-                                        A-Z)*neutron_LHAPDFSets[Setname]["up90"][fl])/nonuclear_Sets[fl]
-                                    Y_minus = (1./A)*(Z*LHAPDFSets[Setname]["low90"][fl]+(
-                                        A-Z)*neutron_LHAPDFSets[Setname]["low90"][fl])/nonuclear_Sets[fl]
+                                    Y_minus = Y-std/1.644854
+                                    Y_plus = Y+std/1.644854
+                                elif UNCERTAINTY == "90CL":
+                                    Y_minus = Y-std
+                                    Y_plus = Y+std
+                                """ #! wrong
+                                if "nCTEQ15" in Setname:
+                                    Y = (1./A)*(Z*LHAPDFSets[Setname]["median"][fl]+(
+                                        A-Z)*neutron_LHAPDFSets[Setname]["median"][fl])/nonuclear_Sets[fl]
+                                    if UNCERTAINTY=="68CL":
+                                        Y_plus = (1./A)*(Z*LHAPDFSets[Setname]["up68"][fl]+(
+                                            A-Z)*neutron_LHAPDFSets[Setname]["up68"][fl])/nonuclear_Sets[fl]
+                                        Y_minus = (1./A)*(Z*LHAPDFSets[Setname]["low68"][fl]+(
+                                            A-Z)*neutron_LHAPDFSets[Setname]["low68"][fl])/nonuclear_Sets[fl]
+                                    elif UNCERTAINTY=="90CL":
+                                        Y_plus = (1./A)*(Z*LHAPDFSets[Setname]["up90"][fl]+(
+                                            A-Z)*neutron_LHAPDFSets[Setname]["up90"][fl])/nonuclear_Sets[fl]
+                                        Y_minus = (1./A)*(Z*LHAPDFSets[Setname]["low90"][fl]+(
+                                A-Z)*neutron_LHAPDFSets[Setname]["low90"][fl])/nonuclear_Sets[fl]
+                                """
                             else:
                                 Y = LHAPDFSets[Setname]["median"][fl]/nonuclear_Sets[fl]
                                 if UNCERTAINTY == "68CL":
