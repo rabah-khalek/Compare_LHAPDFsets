@@ -175,13 +175,13 @@ for comparison_choice in comparison_choices:
                     LOW = LHAPDFSets[Setname]["mean"][fl] - LHAPDFSets[Setname]["std"][fl]
 
                 if Type_of_sets == "FFs":
-                    dist = "$zD^{("+hadron+")}_{i}$"
+                    dist = "zD^{("+hadron+")}_{i}"
                     xaxis_label = "z"
                 elif Type_of_sets == "PDFs":
-                    dist = "$xf^{(p)}_{i}$"
+                    dist = "xf^{(p)}_{i}"
                     xaxis_label = "x"
                 elif Type_of_sets == "nPDFs":
-                    dist = "$xf^{(A)}_{i}$"
+                    dist = "xf^{(A)}_{i}"
                     xaxis_label = "x"
 
 
@@ -203,9 +203,9 @@ for comparison_choice in comparison_choices:
 
                     Y_minus = None
                     Y_plus = None
-                    dist="$\delta($"+dist+"$)\,[\%]$"
+                    dist=r"\delta \left("+dist+r"\right)"
                     ls="-"
-                    temp_colors = ['m', 'c', 'y', 'k']
+                    temp_colors = ['r', 'b', 'g', '#8c564b']
                     color = temp_colors[iSet]  # colors[Type_of_sets][iSet]
 
                 elif Comparison == "Ratio":
@@ -220,15 +220,15 @@ for comparison_choice in comparison_choices:
                     ls="--"
 
                     if Type_of_sets == "FFs":
-                        dist_den = r"$zD^{("+hadron+") {\rm [ref]}}_{i}$"
+                        dist_den = r"zD^{("+hadron+") {\rm [ref]}}_{i}"
                     elif Type_of_sets == "PDFs":
-                        dist_den = r"$xf^{(p) {\rm [ref]}}_{i}$"
+                        dist_den = r"xf^{(p) {\rm [ref]}}_{i}"
                     elif Type_of_sets == "nPDFs":
-                        dist_den = r"$xf^{(A) {\rm [ref]}}_{i}$"
+                        dist_den = r"xf^{(A) {\rm [ref]}}_{i}"
 
                     # dist=dist+"/"+dist+" [ref]"
                     dist=dist+"/"+dist_den
-                    temp_colors = ['m', 'c', 'y', 'k']
+                    temp_colors = ['r', 'b', 'g', '#8c564b']
                     color = temp_colors[iSet] #colors[Type_of_sets][iSet]
 
                 elif Comparison == "AbsolutesandRatio":
@@ -252,7 +252,8 @@ for comparison_choice in comparison_choices:
 
                     dist1=dist #+r" $\pm 1-\sigma$"
                     dist2="Ratio"
-                    color = colors[Type_of_sets][iSet]
+                    temp_colors = ['r', 'b', 'g', '#8c564b']
+                    color = temp_colors[iSet]  # colors[Type_of_sets][iSet]
                 
                 elif Comparison == "NuclearRatio":
                     if any(ext in Setname for ext in N1s) and Setname!="EPPS16nlo_CT14nlo_Pb208":
@@ -352,7 +353,7 @@ for comparison_choice in comparison_choices:
                             
                         ls = "-"
 
-                        dist = "$R^{(A)}_{i}$"
+                        dist = "R^{(A)}_{i}"
                         color = colors[Type_of_sets][int((iSet+1)/2)-1]
 
                 elif Comparison == "NuclearRatio_pull" and (not any(ext in Setname for ext in N1s) or Setname=="EPPS16nlo_CT14nlo_Pb208"):
@@ -361,7 +362,7 @@ for comparison_choice in comparison_choices:
                     Y_minus=Y_pull[Setname][fl]
                     Y_plus = Y_pull[Setname][fl]
 
-                    dist = r" $P_i\left[R^{(A)}\right]$"
+                    dist = r" P\left(R_i^{(A)}\right)"
                     color = colors[Type_of_sets][int((iSet+1)/2)-1]
 
                 elif Comparison == "NuclearRatio_RelativeUncertainty" and not any(ext in Setname for ext in N1s) or Setname == "EPPS16nlo_CT14nlo_Pb208":
@@ -370,7 +371,7 @@ for comparison_choice in comparison_choices:
                     Y_minus = Y_rel[Setname][fl]
                     Y_plus = Y_rel[Setname][fl]
 
-                    dist = r" $\delta(R_i^{(A)})\,[\%]$"
+                    dist = r" \delta\left(R_i^{(A)}\right)"
                     color = colors[Type_of_sets][int((iSet+1)/2)-1]
                 ##
                 if iSet == 0:
@@ -464,7 +465,7 @@ for comparison_choice in comparison_choices:
                     
                 ##
                 if not ifl%ncol:
-                    axs[ifl].set_ylabel(r'{\rm \boldmath'+dist+'}', fontsize=fontsize, rotation=90)
+                    axs[ifl].set_ylabel(r'{\rm \boldmath $'+dist+r'$}', fontsize=fontsize, rotation=90)
                     axs[ifl].yaxis.set_label_coords(-0.09, 0.5)
                     if Comparison == "AbsolutesandRatio":
                         axs2[ifl].set_ylabel(r'{\rm \textbf{'+dist2+'}}', fontsize=fontsize, rotation=90)
