@@ -14,11 +14,12 @@ import src.sets as SETS
 
 Ratio_den_Set = 0  # 0 for the first PDF to be chosen as denominator in the ratio
 
-N1s = ["_N1", "CT14nlo", "nCTEQ15WZSIH_1_1"]
+N1s = ["_p", "_N1", "CT14nlo", "nCTEQ15WZSIH_1_1"]
 
 #---- plotting settings
 
 colors={}
+lss={}
 
 InputCard = sys.argv[1]
 outputname = InputCard.split(".yaml")[0]
@@ -35,7 +36,7 @@ output_format = Fits_catalog['Global Settings']["output_format"]
 rc('xtick', labelsize=fontsize)
 rc('ytick', labelsize=fontsize)
 
-if comparison_choices[0]=="all":
+if comparison_choices=="all":
     comparison_choices = list(Fits_catalog.keys())
 
 if 'Global Settings' in comparison_choices:
@@ -69,6 +70,13 @@ for comparison_choice in comparison_choices:
         colors[Type_of_sets] = py.rcParams['axes.prop_cycle'].by_key()['color']
     else:
         colors[Type_of_sets] = Fits_catalog['Global Settings'][Type_of_sets]["colors"]
+        
+    if "colors" in Fits_catalog[comparison_choice].keys():
+        colors[Type_of_sets] = Fits_catalog[comparison_choice]["colors"]
+
+    if "lss" in Fits_catalog[comparison_choice].keys():
+        lss[Type_of_sets] = Fits_catalog[comparison_choice]["lss"]
+    
 
     if not os.path.isdir(outputname):
         os.system('mkdir '+outputname)
@@ -132,6 +140,9 @@ for comparison_choice in comparison_choices:
         else:
             Settingslabel_loc = "upper center"
 
+        if "colors" in Fits_catalog[comparison_choice]["Comparisons"][Comparison].keys():
+            colors[Type_of_sets] = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["colors"]
+
         ncol = int(Fits_catalog[comparison_choice]["Comparisons"][Comparison]["ncol"])
 
         if len(flavors_to_plot)>1:
@@ -192,7 +203,10 @@ for comparison_choice in comparison_choices:
                         Y = LHAPDFSets[Setname]["mean"][fl]
                     Y_minus = LOW
                     Y_plus = UP
-                    ls="-"
+                    if "lss" in Fits_catalog[comparison_choice].keys():
+                        ls=lss[Type_of_sets][iSet]
+                    else:
+                        ls="-"
                     color = colors[Type_of_sets][iSet]
 
                 elif Comparison == "Relative Uncertainty":
@@ -204,9 +218,11 @@ for comparison_choice in comparison_choices:
                     Y_minus = None
                     Y_plus = None
                     dist=r"\delta \left("+dist+r"\right)"
-                    ls="-"
-                    temp_colors = ['r', 'b', 'g', '#8c564b']
-                    color = temp_colors[iSet]  # colors[Type_of_sets][iSet]
+                    if "lss" in Fits_catalog[comparison_choice].keys():
+                        ls=lss[Type_of_sets][iSet]
+                    else:
+                        ls="-"
+                    color = colors[Type_of_sets][iSet]
 
                 elif Comparison == "Ratio":
                     if UNCERTAINTY == "68CL" or UNCERTAINTY == "90CL":
@@ -217,7 +233,10 @@ for comparison_choice in comparison_choices:
                         Y = LHAPDFSets[Setname]["mean"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
                         Y_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
                         Y_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
-                    ls="--"
+                    if "lss" in Fits_catalog[comparison_choice].keys():
+                        ls=lss[Type_of_sets][iSet]
+                    else:
+                        ls="-"
 
                     if Type_of_sets == "FFs":
                         dist_den = r"zD^{("+hadron+") {\rm [ref]}}_{i}"
@@ -228,8 +247,7 @@ for comparison_choice in comparison_choices:
 
                     # dist=dist+"/"+dist+" [ref]"
                     dist=dist+"/"+dist_den
-                    temp_colors = ['r', 'b', 'g', '#8c564b']
-                    color = temp_colors[iSet] #colors[Type_of_sets][iSet]
+                    color = colors[Type_of_sets][iSet]
 
                 elif Comparison == "AbsolutesandRatio":
                     if UNCERTAINTY == "68CL" or UNCERTAINTY == "90CL":
@@ -238,7 +256,10 @@ for comparison_choice in comparison_choices:
                         Y = LHAPDFSets[Setname]["mean"][fl]
                     Y_minus = LOW
                     Y_plus = UP
-                    ls="-"
+                    if "lss" in Fits_catalog[comparison_choice].keys():
+                        ls=lss[Type_of_sets][iSet]
+                    else:
+                        ls="-"
 
                     if UNCERTAINTY == "68CL" or UNCERTAINTY == "90CL":
                         Y2 = LHAPDFSets[Setname]["median"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["median"][fl]
@@ -248,29 +269,29 @@ for comparison_choice in comparison_choices:
                         Y2 = LHAPDFSets[Setname]["mean"][fl] / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
                         Y2_minus = LOW / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
                         Y2_plus = UP / LHAPDFSets[Setsnames[Ratio_den_Set]]["mean"][fl]
-                    ls2="--"
+                    if "lss" in Fits_catalog[comparison_choice].keys():
+                        ls2=lss[Type_of_sets][iSet]
+                    else:
+                        ls2="-"
 
                     dist1=dist #+r" $\pm 1-\sigma$"
                     dist2="Ratio"
-                    temp_colors = ['r', 'b', 'g', '#8c564b']
-                    color = temp_colors[iSet]  # colors[Type_of_sets][iSet]
+                    color = colors[Type_of_sets][iSet]
                 
                 elif Comparison == "NuclearRatio":
                     if any(ext in Setname for ext in N1s) and Setname!="EPPS16nlo_CT14nlo_Pb208":
 
-                        A = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["A"]
-                        Z = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["Z"]
+                        A = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["A"][int((iSet+1)/2)]
+                        Z = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["Z"][int((iSet+1)/2)]
                         
                         if Error_type[iSet]=="MC":
-                            nonuclear_Sets[fl] = (
-                                1./A)*(Z*Sets[Setname][fl]+(A-Z)*neutron_Sets[Setname][fl])
+                            nonuclear_Sets[fl] = (1./A)*(Z*Sets[Setname][fl]+(A-Z)*neutron_Sets[Setname][fl])
                         elif "hessian" in Error_type[iSet]:
                             #if "nCTEQ15" in Setname:
                             #    nonuclear_Sets[fl] = LHAPDFSets[Setname]["median"][fl] #Sets[Setname][fl] #
                             #else:
                             nonuclear_Sets[fl] = (
                                     1./A)*(Z*LHAPDFSets[Setname]["median"][fl]+(A-Z)*neutron_LHAPDFSets[Setname]["median"][fl])
-                        color = colors[Type_of_sets][iSet]
                     else:
                         if Error_type[iSet]=="MC":
                             Nmem = Sets[Setname][fl].shape[0]
@@ -407,7 +428,11 @@ for comparison_choice in comparison_choices:
                         label_suffix=r" {\rm [ref]}"
 
                     p1 = axs[ifl].plot(X, Y, color=color, ls=ls, lw=1.5)
-                    p1s.append(p1[0])
+                    if comparison_choice=="RW_ex":
+                        if iSet%2==0:
+                            p1s.append(p1[0])
+                    else:
+                        p1s.append(p1[0])
 
                     if Comparison == "NuclearRatio" or Comparison == "NuclearRatio_pull" or Comparison == "NuclearRatio_RelativeUncertainty":
                         LABEL = Setlabels[int((iSet+1)/2)-1]+label_suffix
@@ -416,12 +441,18 @@ for comparison_choice in comparison_choices:
 
                     if Comparison != "Relative Uncertainty":
                         if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
+                            
                             axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=color, edgecolor=color, alpha=0.25, lw=0.1) #, label=LABEL)
                             p2 = axs[ifl].fill(np.NaN, np.NaN, facecolor=color, edgecolor=color, alpha=0.25, lw=0.1)
                             #p2s.append(p2)
                             ps.append((p2[0], p1[0]))
-                    
-                    labels.append(LABEL)
+                            #ps.append(p1[0])
+
+                    if comparison_choice=="RW_ex":
+                        if iSet%2==0:
+                            labels.append(LABEL)
+                    else:
+                        labels.append(LABEL)
                     #lg = axs[ifl].legend(ps,labels,loc='best', title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'} ($Q=' + '{: .1f}'.format(
                     #    Q)+r'\, \, {\rm GeV}$)\\}', # \textbf{[Preliminary]}\\}',
                     #     fontsize=legend_fontsize, ncol=1, frameon=False, handletextpad=-1.8)
@@ -429,9 +460,11 @@ for comparison_choice in comparison_choices:
 
                 else:
                     axs[ifl].plot(X, Y, color=color, ls=ls, lw=1.5)
+                    
                     if Comparison != "Relative Uncertainty":
                         if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
                             axs[ifl].fill_between(X, Y_plus, Y_minus, facecolor=color, edgecolor=color, alpha=0.25, lw=0.1)
+                
 
                 if Comparison == "AbsolutesandRatio":
                     axs2[ifl].plot(X, Y2, color=color, ls=ls2, lw=1.5)
@@ -439,14 +472,24 @@ for comparison_choice in comparison_choices:
 
                 ##
                 axs[ifl].set_xscale('log')
-                axs[ifl].set_xlim(xmin, xmax)
+                if "xlim" in Fits_catalog[comparison_choice]["Comparisons"][Comparison]:
+                    xlim = Fits_catalog[comparison_choice]["Comparisons"][Comparison]['xlim']
+                    if xlim[ifl]:
+                        axs[ifl].set_xlim(xlim[ifl][0], xlim[ifl][1])
+                else:
+                    axs[ifl].set_xlim(xmin, xmax)
                 axs[ifl].tick_params(direction='in', which='both')
                 axs[ifl].tick_params(which='major', length=7)
                 axs[ifl].tick_params(which='minor', length=4)
 
                 if Comparison == "AbsolutesandRatio":
                     axs2[ifl].set_xscale('log')
-                    axs2[ifl].set_xlim(xmin, xmax)
+                    if "xlim" in Fits_catalog[comparison_choice]["Comparisons"][Comparison]:
+                        xlim = Fits_catalog[comparison_choice]["Comparisons"][Comparison]['xlim']
+                        if xlim[ifl]:
+                            axs2[ifl].set_xlim(xlim[ifl][0], xlim[ifl][1])
+                    else:
+                        axs2[ifl].set_xlim(xmin, xmax)
                     axs2[ifl].tick_params(direction='in', which='both')
                     axs2[ifl].tick_params(which='major', length=7)
                     axs2[ifl].tick_params(which='minor', length=4)
@@ -547,31 +590,71 @@ for comparison_choice in comparison_choices:
             if comparison_choice != "PRL_therr" or Setname != "NNPDF31_nnlo_as_0118_kF_1_kR_1":
                 for ifl, fl in enumerate(flavors_to_plot):
                     if fl == LegendPosition:
-                        lg = axs[ifl].legend(ps,labels,loc=PDFlabel_loc, title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'}\\}', # \textbf{[Preliminary]}\\}',
-                                fontsize=legend_fontsize, ncol=1, frameon=False)#, handletextpad=-1.8)
+                        if len(flavors_to_plot)!=1:
+                            lg = axs[ifl].legend(ps,labels,loc=PDFlabel_loc, title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'}\\}', # \textbf{[Preliminary]}\\}',
+                                    fontsize=legend_fontsize, ncol=1, frameon=False)#, handletextpad=-1.8)
+                            lg.get_title().set_fontsize(fontsize=legend_fontsize)
+
+                            if ncol==2 or ncol==1:
+                                adjacent_ifl=1
+                            elif ncol==3:
+                                adjacent_ifl=3
+
+                            axs[ifl+adjacent_ifl].plot(np.NaN, np.NaN, color='black', ls=ls, lw=1.5,label=UNCLABEL[0])
+                            axs[ifl+adjacent_ifl].fill(np.NaN, np.NaN, facecolor='black', edgecolor='black', alpha=0.25, lw=0.1,label=UNCLABEL[1])
+                            lg2 = axs[ifl+adjacent_ifl].legend(loc=Settingslabel_loc, title=r'{\rm $Q=' + '{: .1f}'.format(
+                                Q)+r'\, \, {\rm GeV}$\\}',  # \textbf{[Preliminary]}\\}',
+                                    fontsize=legend_fontsize, ncol=1, frameon=False)
+                            #lg2 = axs[ifl+adjacent_ifl].legend([],[],loc='upper right', title=r'{\rm $Q=' + '{: .1f}'.format(
+                            #    Q)+r'\, \, {\rm GeV}$\\'+UNCLABEL+r'}',  # \textbf{[Preliminary]}\\}',
+                            #        fontsize=legend_fontsize, ncol=1, frameon=False, handletextpad=-1.8)
+                            lg2.get_title().set_fontsize(fontsize=legend_fontsize)
+                        else:
+                            lg = axs[ifl].legend(ps,labels,loc=PDFlabel_loc, title=r'{\rm \textbf{'+NUCLEUS+r'} {\rm ($Q=' + '{: .1f}'.format(
+                                Q)+r'\, \, {\rm GeV})$\\}', # \textbf{[Preliminary]}\\}',
+                                    fontsize=legend_fontsize, ncol=1, frameon=False)#, handletextpad=-1.8)
+                            lg.get_title().set_fontsize(fontsize=legend_fontsize)
+        else:
+            if comparison_choice == "RW_ex":
+                for ifl, fl in enumerate(flavors_to_plot):
+                    if fl == LegendPosition:
+
+                        if len(flavors_to_plot)!=1:
+                            lg = axs[ifl].legend(p1s,labels,loc=PDFlabel_loc, title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'}\\}', # \textbf{[Preliminary]}\\}',
+                                    fontsize=legend_fontsize, ncol=1, frameon=False)#, handletextpad=-1.8)
+                            lg.get_title().set_fontsize(fontsize=legend_fontsize)
+                            
+                            if ncol==2:
+                                adjacent_ifl=1
+                            elif ncol==3:
+                                adjacent_ifl=3
+                            axs[ifl+adjacent_ifl].plot(np.NaN, np.NaN, color='black', ls='-', lw=1.5,label=r"{\rm Fit}")
+                            axs[ifl+adjacent_ifl].plot(np.NaN, np.NaN, color='black', ls='--', lw=1.5,label=r"{\rm Reweighting}")
+                            lg2 = axs[ifl+adjacent_ifl].legend(loc=Settingslabel_loc, title=r'{\rm $Q=' + '{: .1f}'.format(
+                                Q)+r'\, \, {\rm GeV}$\\}',  # \textbf{[Preliminary]}\\}',
+                                    fontsize=legend_fontsize, ncol=1, frameon=False)
+                            #lg2 = axs[ifl+adjacent_ifl].legend([],[],loc='upper right', title=r'{\rm $Q=' + '{: .1f}'.format(
+                            #    Q)+r'\, \, {\rm GeV}$\\'+UNCLABEL+r'}',  # \textbf{[Preliminary]}\\}',
+                            #        fontsize=legend_fontsize, ncol=1, frameon=False, handletextpad=-1.8)
+                            lg2.get_title().set_fontsize(fontsize=legend_fontsize)
+                        else:
+                            lg = axs[ifl].legend(p1s,labels,loc=PDFlabel_loc, title=r'{\rm \textbf{'+NUCLEUS+r'} {\rm ($Q=' + '{: .1f}'.format(
+                                Q)+r'\, \, {\rm GeV})$\\}', # \textbf{[Preliminary]}\\}',
+                                    fontsize=legend_fontsize, ncol=1, frameon=False)#, handletextpad=-1.8)
+                            lg.get_title().set_fontsize(fontsize=legend_fontsize)
+
+
+
+            else:
+                for ifl, fl in enumerate(flavors_to_plot):
+                    if fl == LegendPosition:
+                        lg = axs[ifl].legend(p1s, labels, loc=PDFlabel_loc, title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'} ($Q=' + '{: .1f}'.format(
+                            Q)+r'\, \, {\rm GeV}$)\\}', # \textbf{[Preliminary]}\\}',
+                            fontsize=legend_fontsize, ncol=1, frameon=False)
                         lg.get_title().set_fontsize(fontsize=legend_fontsize)
 
-                        if ncol==2:
-                            adjacent_ifl=1
-                        elif ncol==3:
-                            adjacent_ifl=3
 
-                        axs[ifl+adjacent_ifl].plot(np.NaN, np.NaN, color='black', ls=ls, lw=1.5,label=UNCLABEL[0])
-                        axs[ifl+adjacent_ifl].fill(np.NaN, np.NaN, facecolor='black', edgecolor='black', alpha=0.25, lw=0.1,label=UNCLABEL[1])
-                        lg2 = axs[ifl+adjacent_ifl].legend(loc=Settingslabel_loc, title=r'{\rm $Q=' + '{: .1f}'.format(
-                            Q)+r'\, \, {\rm GeV}$\\}',  # \textbf{[Preliminary]}\\}',
-                                fontsize=legend_fontsize, ncol=1, frameon=False)
-                        #lg2 = axs[ifl+adjacent_ifl].legend([],[],loc='upper right', title=r'{\rm $Q=' + '{: .1f}'.format(
-                        #    Q)+r'\, \, {\rm GeV}$\\'+UNCLABEL+r'}',  # \textbf{[Preliminary]}\\}',
-                        #        fontsize=legend_fontsize, ncol=1, frameon=False, handletextpad=-1.8)
-                        lg2.get_title().set_fontsize(fontsize=legend_fontsize)
-        else:
-            for ifl, fl in enumerate(flavors_to_plot):
-                if fl == LegendPosition:
-                    lg = axs[ifl].legend(p1s, labels, loc=PDFlabel_loc, title=r'{\rm \textbf{'+NUCLEUS+r'} \textbf{'+PTO+r'} ($Q=' + '{: .1f}'.format(
-                        Q)+r'\, \, {\rm GeV}$)\\}', # \textbf{[Preliminary]}\\}',
-                        fontsize=legend_fontsize, ncol=1, frameon=False)
-                    lg.get_title().set_fontsize(fontsize=legend_fontsize)
+
 
         py.tight_layout()
         py.savefig(outputname+'/'+comparison_choice+'_'+Comparison.split(" ")[0] +
