@@ -186,13 +186,22 @@ for comparison_choice in comparison_choices:
                     LOW = LHAPDFSets[Setname]["mean"][fl] - LHAPDFSets[Setname]["std"][fl]
 
                 if Type_of_sets == "FFs":
-                    dist = "zD^{("+hadron+")}_{i}"
+                    if len(flavors_to_plot)!=1:
+                        dist = "zD^{("+hadron+")}_{i}"
+                    else:
+                        dist = "zD^{("+hadron+")}_{"+fl+"}"
                     xaxis_label = "z"
                 elif Type_of_sets == "PDFs":
-                    dist = "xf^{(p)}_{i}"
+                    if len(flavors_to_plot)!=1:
+                        dist = "xf^{(p)}_{i}"
+                    else:
+                        dist = "xf^{(p)}_{"+fl+"}"
                     xaxis_label = "x"
                 elif Type_of_sets == "nPDFs":
-                    dist = "xf^{(A)}_{i}"
+                    if len(flavors_to_plot)!=1:
+                        dist = "xf^{(A)}_{i}"
+                    else:
+                        dist = "xf^{(A)}_{"+fl+"}"
                     xaxis_label = "x"
 
 
@@ -239,11 +248,20 @@ for comparison_choice in comparison_choices:
                         ls="-"
 
                     if Type_of_sets == "FFs":
-                        dist_den = r"zD^{("+hadron+") {\rm [ref]}}_{i}"
+                        if len(flavors_to_plot)!=1:
+                            dist_den = r"zD^{("+hadron+") {\rm [ref]}}_{i}"
+                        else:
+                            dist_den = r"zD^{("+hadron+") {\rm [ref]}}_{"+fl+"}"
                     elif Type_of_sets == "PDFs":
-                        dist_den = r"xf^{(p) {\rm [ref]}}_{i}"
+                        if len(flavors_to_plot)!=1:
+                            dist_den = r"xf^{(p) {\rm [ref]}}_{i}"
+                        else:
+                            dist_den = r"xf^{(p) {\rm [ref]}}_{"+fl+"}"
                     elif Type_of_sets == "nPDFs":
-                        dist_den = r"xf^{(A) {\rm [ref]}}_{i}"
+                        if len(flavors_to_plot)!=1:
+                            dist_den = r"xf^{(A) {\rm [ref]}}_{i}"
+                        else:
+                            dist_den = r"xf^{(A) {\rm [ref]}}_{"+fl+"}"
 
                     # dist=dist+"/"+dist+" [ref]"
                     dist=dist+"/"+dist_den
@@ -373,8 +391,10 @@ for comparison_choice in comparison_choices:
                             Y_rel[Setname][fl] = (Y_plus-Y_minus)/Y
                             
                         ls = "-"
-
-                        dist = "R^{(A)}_{i}"
+                        if len(flavors_to_plot)!=1:
+                            dist = "R^{(A)}_{i}"
+                        else:
+                            dist = "R^{(A)}_{"+fl+"}"
                         color = colors[Type_of_sets][int((iSet+1)/2)-1]
 
                 elif Comparison == "NuclearRatio_pull" and (not any(ext in Setname for ext in N1s) or Setname=="EPPS16nlo_CT14nlo_Pb208"):
@@ -382,8 +402,10 @@ for comparison_choice in comparison_choices:
                     Y=Y_pull[Setname][fl]
                     Y_minus=Y_pull[Setname][fl]
                     Y_plus = Y_pull[Setname][fl]
-
-                    dist = r" P\left(R_i^{(A)}\right)"
+                    if len(flavors_to_plot)!=1:
+                        dist = r" P\left(R_i^{(A)}\right)"
+                    else:
+                        dist = r" P\left(R_{"+fl+r"}^{(A)}\right)"
                     color = colors[Type_of_sets][int((iSet+1)/2)-1]
 
                 elif Comparison == "NuclearRatio_RelativeUncertainty" and not any(ext in Setname for ext in N1s) or Setname == "EPPS16nlo_CT14nlo_Pb208":
@@ -391,8 +413,10 @@ for comparison_choice in comparison_choices:
                     Y = Y_rel[Setname][fl]
                     Y_minus = Y_rel[Setname][fl]
                     Y_plus = Y_rel[Setname][fl]
-
-                    dist = r" \delta\left(R_i^{(A)}\right)"
+                    if len(flavors_to_plot)!=1:
+                        dist = r" \delta\left(R_i^{(A)}\right)"
+                    else:
+                        dist = r" \delta\left(R_{"+fl+r"}^{(A)}\right)"
                     color = colors[Type_of_sets][int((iSet+1)/2)-1]
                 ##
                 if iSet == 0:
@@ -517,7 +541,9 @@ for comparison_choice in comparison_choices:
                 fl_label_scale=1
                 if fl == 'u^+ + d^+ + s^+':
                     fl_label_scale=2.75
-                axs[ifl].text(0.075*fl_label_scale, 0.9, r'{\rm \boldmath $'+fl+'$}' , horizontalalignment='center', verticalalignment='center', transform=axs[ifl].transAxes, fontsize=fontsize)
+                
+                if len(flavors_to_plot)!=1:
+                    axs[ifl].text(0.075*fl_label_scale, 0.9, r'{\rm \boldmath $'+fl+'$}' , horizontalalignment='center', verticalalignment='center', transform=axs[ifl].transAxes, fontsize=fontsize)
 
                 #https://stackoverflow.com/questions/44078409/matplotlib-semi-log-plot-minor-tick-marks-are-gone-when-range-is-large
                 locmaj = matplotlib.ticker.LogLocator(base=10.0, numticks=12)
