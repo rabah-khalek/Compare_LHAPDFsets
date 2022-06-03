@@ -1,6 +1,11 @@
 #-- Author: Rabah Abdul Khalek <rabah.khalek@gmail.com>
 import matplotlib.ticker
 import sys, os
+#os.environ["LHAPDF_DATA_PATH"] = "/Users/rabah/Documents/FF_SIDIS_project/FF_SIDIS_Files/Fits/MAPFF20/Q2_00/MAPFF20_PI_NLO_Q2_00\
+#                                 :/Users/rabah/Documents/FF_SIDIS_project/FF_SIDIS_Files/Fits/MAPFF20/Q2_00/MAPFF20_PI_NNLO_Q2_00\
+#                                 :/Users/rabah/Documents/FF_SIDIS_project/FF_SIDIS_Files/Fits/MAPFF20/Q2_00/MAPFF20_KA_NLO_Q2_00\
+#                                 :/Users/rabah/Documents/FF_SIDIS_project/FF_SIDIS_Files/Fits/MAPFF20/Q2_00/MAPFF20_KA_NNLO_Q2_00"
+
 import numpy as np
 import yaml
 import matplotlib.pyplot as py
@@ -14,7 +19,7 @@ import src.sets as SETS
 
 Ratio_den_Set = 0  # 0 for the first PDF to be chosen as denominator in the ratio
 
-N1s = ["_p", "_N1", "CT14nlo", "nCTEQ15WZSIH_1_1"]
+N1s = ["_p","_N1", "CT14nlo", "nCTEQ15WZSIH_1_1"]
 
 #---- plotting settings
 
@@ -161,7 +166,7 @@ for comparison_choice in comparison_choices:
         else:
             gs=fig.add_gridspec(1, 1)
 
-        #py.gcf().subplots_adjust(wspace=0.5)
+        py.gcf().subplots_adjust(left=-0.1)
         
 
         axs = []
@@ -193,13 +198,13 @@ for comparison_choice in comparison_choices:
                     xaxis_label = "z"
                 elif Type_of_sets == "PDFs":
                     if len(flavors_to_plot)!=1:
-                        dist = "xf^{(p)}_{i}"
+                        dist = "xf^{(p)}"
                     else:
                         dist = "xf^{(p)}_{"+fl+"}"
                     xaxis_label = "x"
                 elif Type_of_sets == "nPDFs":
                     if len(flavors_to_plot)!=1:
-                        dist = "xf^{(A)}_{i}"
+                        dist = "xf^{(A)}"
                     else:
                         dist = "xf^{(A)}_{"+fl+"}"
                     xaxis_label = "x"
@@ -254,12 +259,12 @@ for comparison_choice in comparison_choices:
                             dist_den = r"zD^{("+hadron+") {\rm [ref]}}_{"+fl+"}"
                     elif Type_of_sets == "PDFs":
                         if len(flavors_to_plot)!=1:
-                            dist_den = r"xf^{(p) {\rm [ref]}}_{i}"
+                            dist_den = r"xf^{(p) {\rm [ref]}}"
                         else:
                             dist_den = r"xf^{(p) {\rm [ref]}}_{"+fl+"}"
                     elif Type_of_sets == "nPDFs":
                         if len(flavors_to_plot)!=1:
-                            dist_den = r"xf^{(A) {\rm [ref]}}_{i}"
+                            dist_den = r"xf^{(A) {\rm [ref]}}"
                         else:
                             dist_den = r"xf^{(A) {\rm [ref]}}_{"+fl+"}"
 
@@ -298,7 +303,6 @@ for comparison_choice in comparison_choices:
                 
                 elif Comparison == "NuclearRatio":
                     if any(ext in Setname for ext in N1s) and Setname!="EPPS16nlo_CT14nlo_Pb208":
-
                         A = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["A"][int((iSet+1)/2)]
                         Z = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["Z"][int((iSet+1)/2)]
                         
@@ -358,20 +362,45 @@ for comparison_choice in comparison_choices:
                                 Y = LHAPDFSets[Setname]["median"][fl]/nonuclear_Sets[fl]
                                 Nmem = Sets[Setname][fl].shape[0]
                                 Y_rep = Sets[Setname][fl]/nonuclear_Sets[fl]
+
+                                stdp = np.zeros(Sets[Setname][fl].shape[1])
+                                stdm = np.zeros(Sets[Setname][fl].shape[1])
+
+                                #Error from CT14nlo
+                                """for im in range(0, int((Sets["CT14nlo"][fl].shape[0]-1)/2)):
+                                    fp = LHAPDFSets[Setname]["median"][fl]/Sets["CT14nlo"][fl][2*im+1, :] #Y_rep[2*im+1, :]
+                                    fm = LHAPDFSets[Setname]["median"][fl]/Sets["CT14nlo"][fl][2*im+2, :] #Y_rep[2*im+2, :]
+                                    stdp+=np.max((fp-Y,fm-Y,np.zeros(Sets[Setname][fl].shape[1])),axis=0)**2
+                                    stdm+=np.min((fp-Y,fm-Y,np.zeros(Sets[Setname][fl].shape[1])),axis=0)**2"""
+
+                                #Error from EPPS16
+                                #https://www.jyu.fi/science/en/physics/research/highenergy/urhic/npdfs/epps16-nuclear-pdfs
+                                _Nmem=40
+                                for im in range(0, int((_Nmem-1)/2)):
+                                    fp = Y_rep[2*im+1, :] #Y_rep[2*im+1, :]
+                                    fm = Y_rep[2*im+2, :] #Y_rep[2*im+2, :]
+                                    stdp+=np.max((fp-Y,fm-Y,np.zeros(Sets[Setname][fl].shape[1])),axis=0)**2
+                                    stdm+=np.min((fp-Y,fm-Y,np.zeros(Sets[Setname][fl].shape[1])),axis=0)**2
+                                stdp=np.sqrt(stdp)
+                                stdm=np.sqrt(stdm)
+
+                                """# the one in the nNNPDF3.0 paper
                                 std = np.zeros(Sets[Setname][fl].shape[1])
                                 for im in range(0, int((Nmem-1)/2)):
-                                    fp = Y_rep[2*im+1, :]
-                                    fm = Y_rep[2*im+2, :]
+                                    fp = Y_rep[2*im+1, :] #Y_rep[2*im+1, :]
+                                    fm = Y_rep[2*im+2, :] #Y_rep[2*im+2, :]
                                     std += (fp-fm)**2
                                 std=0.5*np.sqrt(std)
+                                stdm=std
+                                stdp=std"""
                             #the user should know if the set correspond to 68 or
                             #90 from the .info file
                                 if UNCERTAINTY=="68CL":
-                                    Y_minus = Y-std/1.644854
-                                    Y_plus = Y+std/1.644854
+                                    Y_minus = Y-stdm/1.644854
+                                    Y_plus = Y+stdp/1.644854
                                 elif UNCERTAINTY == "90CL":
-                                    Y_minus = Y-std
-                                    Y_plus = Y+std
+                                    Y_minus = Y-stdm
+                                    Y_plus = Y+stdp
                                     
                             else:
                                 Y = LHAPDFSets[Setname]["median"][fl]/nonuclear_Sets[fl]
@@ -392,7 +421,7 @@ for comparison_choice in comparison_choices:
                             
                         ls = "-"
                         if len(flavors_to_plot)!=1:
-                            dist = "R^{(A)}_{i}"
+                            dist = "R^{(A)}_f"
                         else:
                             dist = "R^{(A)}_{"+fl+"}"
                         color = colors[Type_of_sets][int((iSet+1)/2)-1]
@@ -403,7 +432,7 @@ for comparison_choice in comparison_choices:
                     Y_minus=Y_pull[Setname][fl]
                     Y_plus = Y_pull[Setname][fl]
                     if len(flavors_to_plot)!=1:
-                        dist = r" P\left(R_i^{(A)}\right)"
+                        dist = r" P\left(R_f^{(A)}\right)"
                     else:
                         dist = r" P\left(R_{"+fl+r"}^{(A)}\right)"
                     color = colors[Type_of_sets][int((iSet+1)/2)-1]
@@ -414,7 +443,7 @@ for comparison_choice in comparison_choices:
                     Y_minus = Y_rel[Setname][fl]
                     Y_plus = Y_rel[Setname][fl]
                     if len(flavors_to_plot)!=1:
-                        dist = r" \delta\left(R_i^{(A)}\right)"
+                        dist = r" \delta\left(R_f^{(A)}\right)"
                     else:
                         dist = r" \delta\left(R_{"+fl+r"}^{(A)}\right)"
                     color = colors[Type_of_sets][int((iSet+1)/2)-1]
@@ -528,12 +557,14 @@ for comparison_choice in comparison_choices:
                 if Comparison == "NuclearRatio_pull":
                     axs[ifl].axhline(y=0, linewidth=1.5, ls='--', color='k')
                     axs[ifl].axhline(y=-3, linewidth=1.5, ls='dotted', color='r')
-                    if fl == 'g': axs[ifl].axhline(y=+3, linewidth=1.5, ls='dotted', color='g')
+                    if fl == 'g': 
+                        axs[ifl].axhline(y=+3, linewidth=1.5, ls='dotted', color='g')
+                        axs[ifl].axhline(y=-5, linewidth=1.5, ls='dotted', color='m')
                     
                 ##
                 if not ifl%ncol:
                     axs[ifl].set_ylabel(r'{\rm \boldmath $'+dist+r'$}', fontsize=fontsize, rotation=90)
-                    axs[ifl].yaxis.set_label_coords(-0.09, 0.5)
+                    axs[ifl].yaxis.set_label_coords(-0.11, 0.5)
                     if Comparison == "AbsolutesandRatio":
                         axs2[ifl].set_ylabel(r'{\rm \textbf{'+dist2+'}}', fontsize=fontsize, rotation=90)
                         axs2[ifl].yaxis.set_label_coords(-0.09, 0.5)
@@ -592,9 +623,11 @@ for comparison_choice in comparison_choices:
                     if ylim[ifl]:
                         axs[ifl].set_ylim(ylim[ifl][0], ylim[ifl][1])
                 if Comparison == "AbsolutesandRatio":
-                    axs2[ifl].set_ylim(-0.25, 2.25)
-                    axs2[ifl].set_yticks([0,1,2])
-                    axs2[ifl].set_yticklabels([r'$\rm 0$', r'$\rm 1$', r'$\rm 2$'])
+                    axs2[ifl].set_ylim(0.4, 1.6)
+                    if ifl==5:
+                        axs2[ifl].set_ylim(-0.5, 2.5)
+                    #axs2[ifl].set_yticks([0,1,2])
+                    #axs2[ifl].set_yticklabels([r'$\rm 0$', r'$\rm 1$', r'$\rm 2$'])
 
         #ps = []
         #labels = []

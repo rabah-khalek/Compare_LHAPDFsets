@@ -74,6 +74,7 @@ def LHA2EVLN(LHA):
 def Get(setname, X, q, Replicas, NEUTRON=False):
     SETs = {}
     for Replica in range(0,Replicas):
+        
         # initialization
         LHAPDF = lhapdf.mkPDF(setname, Replica)
 
@@ -134,8 +135,10 @@ def Get(setname, X, q, Replicas, NEUTRON=False):
         SET[r'u^+ + d^+ + s^+'] = SET[r'u^+']+SET[r'd^+']+SET[r's^+']
         SET[r'd^+ + s^+'] = SET[r'd^+']+SET[r's^+']
         SET[r'u + \bar{d}'] = SET[r'u']+SET[r'\bar{d}']
+        SET[r'\bar{d} - \bar{u}'] = SET[r'\bar{d}']-SET[r'\bar{u}']
         SET[r'u/\bar{d}'] = SET[r'u']/SET[r'\bar{d}']
         SET[r'u/d'] = SET[r'u']/SET[r'd']
+        SET[r'R_s'] = SET[r's^+']/(SET[r'\bar{d}']+SET[r'\bar{u}'])
 
         SET[r'u^-'] = SET[r'u']-SET[r'\bar{u}']
         SET[r'd^-'] = SET[r'd']-SET[r'\bar{d}']
