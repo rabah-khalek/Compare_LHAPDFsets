@@ -19,7 +19,7 @@ import src.sets as SETS
 
 Ratio_den_Set = 0  # 0 for the first PDF to be chosen as denominator in the ratio
 
-N1s = ["_p","_N1", "CT14nlo", "nCTEQ15WZSIH_1_1"]
+N1s = ["_p","_N1", "CT14nlo", "nCTEQ15WZSIH_1_1", "CT18ANLO"]
 
 #---- plotting settings
 
@@ -112,10 +112,10 @@ for comparison_choice in comparison_choices:
                 #nonuclear_Sets[Setname] = {}
                 neutron_LHAPDFSets[Setname]  = SETS.GetStats(neutron_Sets[Setname] , Error_type[iSet])
 
-            if "NuclearRatio_pull" in Comparisons.keys() and (not any(ext in Setname for ext in N1s) or Setname=="EPPS16nlo_CT14nlo_Pb208"):
+            if "NuclearRatio_pull" in Comparisons.keys() and (not any(ext in Setname for ext in N1s) or Setname=="EPPS21nlo_CT18Anlo_Pb208"):
                 Y_pull[Setname] = {}
 
-            if "NuclearRatio_RelativeUncertainty" in Comparisons.keys() and (not any(ext in Setname for ext in N1s) or Setname == "EPPS16nlo_CT14nlo_Pb208"):
+            if "NuclearRatio_RelativeUncertainty" in Comparisons.keys() and (not any(ext in Setname for ext in N1s) or Setname == "EPPS21nlo_CT18Anlo_Pb208"):
                 Y_rel[Setname] = {}
         Nset+=1
 
@@ -302,7 +302,7 @@ for comparison_choice in comparison_choices:
                     color = colors[Type_of_sets][iSet]
                 
                 elif Comparison == "NuclearRatio":
-                    if any(ext in Setname for ext in N1s) and Setname!="EPPS16nlo_CT14nlo_Pb208":
+                    if any(ext in Setname for ext in N1s) and Setname!="EPPS21nlo_CT18Anlo_Pb208":
                         A = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["A"][int((iSet+1)/2)]
                         Z = Fits_catalog[comparison_choice]["Comparisons"][Comparison]["Z"][int((iSet+1)/2)]
                         
@@ -358,7 +358,7 @@ for comparison_choice in comparison_choices:
                                 elif UNCERTAINTY == "90CL":
                                     Y_minus = Y-std
                                     Y_plus = Y+std
-                            elif "EPPS16" in Setname:
+                            elif "EPPS21" in Setname:
                                 Y = LHAPDFSets[Setname]["median"][fl]/nonuclear_Sets[fl]
                                 Nmem = Sets[Setname][fl].shape[0]
                                 Y_rep = Sets[Setname][fl]/nonuclear_Sets[fl]
@@ -375,7 +375,8 @@ for comparison_choice in comparison_choices:
 
                                 #Error from EPPS16
                                 #https://www.jyu.fi/science/en/physics/research/highenergy/urhic/npdfs/epps16-nuclear-pdfs
-                                _Nmem=40
+                                #_Nmem=40 #EPPS16
+                                _Nmem=48 #EPPS21
                                 for im in range(0, int((_Nmem-1)/2)):
                                     fp = Y_rep[2*im+1, :] #Y_rep[2*im+1, :]
                                     fm = Y_rep[2*im+2, :] #Y_rep[2*im+2, :]
@@ -426,7 +427,7 @@ for comparison_choice in comparison_choices:
                             dist = "R^{(A)}_{"+fl+"}"
                         color = colors[Type_of_sets][int((iSet+1)/2)-1]
 
-                elif Comparison == "NuclearRatio_pull" and (not any(ext in Setname for ext in N1s) or Setname=="EPPS16nlo_CT14nlo_Pb208"):
+                elif Comparison == "NuclearRatio_pull" and (not any(ext in Setname for ext in N1s) or Setname=="EPPS21nlo_CT18Anlo_Pb208"):
 
                     Y=Y_pull[Setname][fl]
                     Y_minus=Y_pull[Setname][fl]
@@ -437,7 +438,7 @@ for comparison_choice in comparison_choices:
                         dist = r" P\left(R_{"+fl+r"}^{(A)}\right)"
                     color = colors[Type_of_sets][int((iSet+1)/2)-1]
 
-                elif Comparison == "NuclearRatio_RelativeUncertainty" and not any(ext in Setname for ext in N1s) or Setname == "EPPS16nlo_CT14nlo_Pb208":
+                elif Comparison == "NuclearRatio_RelativeUncertainty" and not any(ext in Setname for ext in N1s) or Setname == "EPPS21nlo_CT18Anlo_Pb208":
 
                     Y = Y_rel[Setname][fl]
                     Y_minus = Y_rel[Setname][fl]
@@ -465,13 +466,13 @@ for comparison_choice in comparison_choices:
                         ax = py.subplot(gs[row,col])
                         axs.append(ax)
 
-                if Comparison == "NuclearRatio" and any(ext in Setname for ext in N1s) and Setname!="EPPS16nlo_CT14nlo_Pb208":
+                if Comparison == "NuclearRatio" and any(ext in Setname for ext in N1s) and Setname!="EPPS21nlo_CT18Anlo_Pb208":
                     continue
 
-                if Comparison == "NuclearRatio_pull" and any(ext in Setname for ext in N1s) and Setname!="EPPS16nlo_CT14nlo_Pb208":
+                if Comparison == "NuclearRatio_pull" and any(ext in Setname for ext in N1s) and Setname!="EPPS21nlo_CT18Anlo_Pb208":
                     continue
 
-                if Comparison == "NuclearRatio_RelativeUncertainty" and any(ext in Setname for ext in N1s) and Setname != "EPPS16nlo_CT14nlo_Pb208":
+                if Comparison == "NuclearRatio_RelativeUncertainty" and any(ext in Setname for ext in N1s) and Setname != "EPPS21nlo_CT18Anlo_Pb208":
                     continue
 
                 ##
